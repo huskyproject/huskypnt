@@ -3,22 +3,19 @@
    last change: 12.04.00
 */
 
-#include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <grp.h>
 #include <pwd.h>
-#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
 
-// extern FILE *stdin;
-
-#define VERSION "1.2"
+#define VERSION "1.3"
 
 #define numZipFiles 9
 char *zipFiles[numZipFiles] =
@@ -114,122 +111,6 @@ typedef struct _tCfg
 tCfg Cfg;
 
 #define nfree(a) { if (a != NULL) { free(a); a = NULL; } }
-
-// returns 0 if file exists
-int fexist(char *fname)
-{
-  int rc;
-  struct stat sb;
-
-  rc = stat(fname, &sb);
-
-  if (rc != 0) return rc;
-
-  if (S_ISREG(sb.st_mode)) return 0;
-
-  return 1;
-}
-
-// returns 0 if directory exists
-int direxist(char *dname)
-{
-  int rc;
-  struct stat sb;
-
-  rc = stat(dname, &sb);
-
-  if (rc != 0) return rc;
-
-  if (S_ISDIR(sb.st_mode)) return 0;
-
-  return 1;
-}
-
-// returns 0 if successfull
-int copyFile(char *sourceName, char *destName)
-{
-  FILE *source;
-  FILE *dest;
-  char *buf[1024];
-  int br;
-
-  source = fopen(sourceName, "r");
-  if (source == NULL)
-  {
-    printf("Could not open '%s' for reading while copying to '%s'\n",
-	   sourceName, destName);
-
-    return 1;
-  }
-
-  dest = fopen(destName, "w");
-  if (dest == NULL)
-  {
-    fclose(source);
-
-    printf("Could not open '%s' for writing while copying '%s'\n", destName,
-	   sourceName);
-
-    return 2;
-  }
-
-  while (feof(source) == 0)
-  {
-    br = fread(buf, 1, 1024, source);
-    fwrite(buf, 1, br, dest);
-  }
-
-  fclose(source);
-  fclose(dest);
-
-  return 0;
-}
-
-// returns 0 if successfull
-int touchFile(char *fname)
-{
-  FILE *f;
-
-  f = fopen(fname, "a");
-  if (f == NULL)
-  {
-    printf("Could not touch '%s'!\n", fname);
-
-    return 1;
-  }
-  fclose(f);
-
-  return 0;
-}
-
-// returns 0 if successfull
-int linkFile(char *source, char *dest)
-{
-  char *cmdline;
-  int rc;
-
-  cmdline = malloc(strlen(source)+strlen(dest)+11);
-  sprintf(cmdline, "ln -s %s %s", source, dest);
-  rc = system(cmdline);
-  free(cmdline);
-
-  return rc;
-}
-
-// create directory and parent directories (if needed), returns 0 if
-// successfull
-int mkdirp(char *dirname)
-{
-  char *cmdline;
-  int rc;
-
-  cmdline = malloc(strlen(dirname)+10);
-  sprintf(cmdline, "mkdir -p %s", dirname);
-  rc = system(cmdline);
-  free(cmdline);
-
-  return rc;
-}
 
 char *ask(char *prompt, char *defaultValue)
 {
@@ -1205,7 +1086,7 @@ int createconfig()
 // returns 0 if successfull
 int createuserconfig(char *username)
 {
-  char fname[1024], fname2[1024];
+  char fname[1024];
   char *oldSysOpName, *oldUserName;
   struct passwd *pw;
 
@@ -1389,7 +1270,6 @@ int copyNodelists()
 // returns 0 if successfull
 int copyScripts()
 {
-  int i;
   DIR *dir;
   struct dirent *dirent;
   char *dirname;
@@ -1532,7 +1412,7 @@ int main(int argc, char *argv[])
     setgid(Cfg.groupId);
 
     if (unpacksources() != 0) return 8;
-    if (createmakeconfig() != 0) return ;
+    if (createmakeconfig() != 0) return 9;
     if (compilesmapi() != 0) return 10;
 
     return 0;
