@@ -7,12 +7,12 @@ near future:
 - scroll texts in showFile
 - check entered data
 - put maint etc. into crontab
+- use adduser etc. (see LSB standards) if possible
 - update english part
 - CDP support
 - use new version of carc (yet to be written)
 - write intro screen on how to use HuskyPnt (GNU readline etc.)
 - use less fixed-size buffers (like cwd[1024])
-- translate config remarks to english
 
 later:
 - shortname support
