@@ -13,7 +13,7 @@
 #include "rlsubst.h"
 
 
-char *cfg[numIdx];
+char **cfg;
 
 
 // numXXX are defined in common.h
@@ -229,4 +229,89 @@ int processTemplate(char *templName, char *outName)
 
   return 0;
 }
+
+// returns 0 on success
+int saveConfig()
+{
+  FILE *f;
+  unsigned int i;
+
+  f = fopen(osDir dirSepS "huskypnt.cfg", "w");
+  if (!f)
+  {
+    printf("Could not open " osDir dirSepS "huskypnt.cfg for writing!\n");
+
+    return -1;
+  }
+
+  for (i = 0; i < numIdx; i++)
+  {
+    if (cfg[i]) fprintf(f, "%s\n", cfg[i]);
+    else fprintf(f, "\n");
+  }
+
+  fclose(f);
+  setMode(osDir dirSepS "huskypnt.cfg", 384); // Octal 600
+
+  return 0;
+}
+
+// returns 0 on success
+int loadConfig()
+{
+  FILE *f;
+  unsigned int i;
+  char **newCfg;
+  char *line, *lineTmp;
+  int rc;
+
+  f = fopen(osDir dirSepS "huskypnt.cfg", "r");
+  if (!f) return -1;
+
+  newCfg = calloc(numIdx, sizeof(char *));
+  line = malloc(1024);
+
+  // try to load the file
+  rc = 0;
+  for (i = 0; i < numIdx; i++)
+  {
+    *line = 0;
+
+    fgets(line, 1024, f);
+    if (! *line)
+    {
+      rc = i + 1;
+      break;
+    }
+
+    // strip trailing CR/LF
+    lineTmp = line + strlen(line) - 1;
+    while ((lineTmp > line) && ((*lineTmp == 10) || (*lineTmp == 13)))
+      lineTmp--;
+    if ((*lineTmp == 10) || (*lineTmp == 13)) newCfg[i] = strdup("");
+    else
+    {
+      *(lineTmp + 1) = 0;
+      newCfg[i] = strdup(line);
+    }
+  }
+
+  if (rc)
+  {
+    // could not load the file, free already allocated entries
+    for (i = 0; i < (rc - 1); i++) free(newCfg[i]);
+    free(newCfg);
+  }
+  else
+  {
+    // load succeeded, exchange config
+    free(cfg);
+    cfg = newCfg;
+  }
+
+  free(line);
+
+  return rc;
+}
+
 

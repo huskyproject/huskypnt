@@ -1,12 +1,11 @@
 currently:
-- save config between sessions (useful if compiling fails)
+- BinkD support
 
 near future:
 - use nmcopy
 - multi-user support
 - scroll texts in showFile
 - check entered data
-- BinkD support
 - put maint etc. into crontab
 - update english part
 - CDP support

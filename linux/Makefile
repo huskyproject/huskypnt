@@ -100,3 +100,7 @@ clean:
 	-$(RM) $(RMOPT) *~
 	-$(RM) $(RMOPT) *.bak
 
+distclean: clean
+	-$(RM) $(RMOPT) huskypnt.cfg
+
+

@@ -152,7 +152,9 @@ void getconfig()
   int c;
   int i;
 
-  for (i = 0; i < numIdx; i++) cfg[i] = strdup(defaults[i]);
+  // init config
+  if (loadConfig())
+    for (i = 0; i < numIdx; i++) cfg[i] = strdup(defaults[i]);
 
   while (ok != 0)
   {
@@ -706,6 +708,8 @@ void disposeCfg()
   // ignore userNameIdx
   for (i = 0; i < numIdx; i++)
     if (i != userNameIdx) nfree(cfg[i]);
+
+  free(cfg);
 }
 
 int doMain()
@@ -723,6 +727,7 @@ int doMain()
   if (checkfiles() != 0) return rcCheckFiles;
 
   getconfig();
+  saveConfig();
   chooseboss();
 
   if (createusers() != 0) return rcCreateUsers;
@@ -750,6 +755,7 @@ int doMain()
   if (copyScripts() != 0) return rcCopyScripts;
 
   getuplinkconfig();
+  saveConfig();
   createSystemConfigAfterInstall();
 
   rc = callAsUser(cfg[fidoNameIdx], cfg[groupNameIdx], createGlobalConfig);
@@ -797,7 +803,7 @@ int main(int argc, char *argv[])
   rc = osInit();
   if (rc != 0) return rc;
 
-  memset(&cfg, 0, numIdx * sizeof(char *));
+  cfg = calloc(numIdx, sizeof(char *));
 
   // we are in the operating system directory => go to top directory
   oldDir = malloc(1024);
@@ -806,7 +812,7 @@ int main(int argc, char *argv[])
 
   rc = doMain();
 
-  // back to OS dir, free all variables
+  // back to OS dir, save config, free all variables
   chdir(oldDir);
   free(oldDir);
   disposeCfg();

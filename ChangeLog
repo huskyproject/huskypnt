@@ -1,4 +1,9 @@
 ----- cvs ci -----
+Mon Sep  4 00:02:28 UTC 2000
+sms:
+* saving config between sessions (useful if compiling fails)
+
+----- cvs ci -----
 Wed Aug 30 19:55:53 UTC 2000
 sms:
 * renamed msged.scheme.cfg to msged.colors.cfg, only including it if colors

@@ -217,15 +217,19 @@ char *descTexts[numIdx] =
   "Dein Uplink kann diesen Schutz umgehen, aber der hat Dein Passwort\n"
   "sowieso. :)\n\n",
 
-  "In diesem Verzeichnis wird die Doku im HTML-Format abgelegt.\n\n",
+  // homedir - description stored elsewhere
+  "",
 
   "In diesem Verzeichnis wird die Doku im Info-Format abgelegt.\n\n",
 
+  "In diesem Verzeichnis wird die Doku im HTML-Format abgelegt.\n\n",
+
+  // username used internally
   "",
 
   "Tosser etc. sind in dieser Gruppe und haben damit quasi Admin-Rechte\n"
   "fuer die Fido-Software, sie koennen unter anderem auf die Netmail-Areas\n"
-  "(also die privaten Mails) der User zugreifen\n",
+  "(also die privaten Mails) der User zugreifen.\n\n"
 };
 
 char *chooseBossText =

@@ -92,7 +92,8 @@ typedef struct _tMenuEntry
 } tMenuEntry;
 
 
-extern char *cfg[numIdx];
+// numIdx entries
+extern char **cfg;
 
 char *ask(char *prompt, char *defaultValue);
 
@@ -102,8 +103,14 @@ int askAllright();
 // returns 0 on success
 int setTemplateVars();
 
-// returns 0 if successfull
+// returns 0 on success
 int processTemplate(char *templName, char *outName);
+
+// returns 0 on success
+int saveConfig();
+
+// returns 0 on success
+int loadConfig();
 
 #endif
 

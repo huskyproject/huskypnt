@@ -11,14 +11,8 @@ choose-language:
 	@echo "deutsch                   make c-german"
 	@echo ""
 
-clean:
-	@echo ""
-	@echo "Please choose your operating system:"
-	@echo ""
-	@echo "operating system          command"
-	@echo "--------------------------------------------------------------"
-	@echo "Linux                     make linux-clean"
-	@echo ""
+clean: linux-clean
+distclean: linux-distclean
 
 c-english:
 	@echo ""
@@ -45,5 +39,8 @@ linux-german:
 	make -C linux german
 
 linux-clean:
-	make -C linux clean
+	-make -C linux clean
+
+linux-distclean:
+	-make -C linux distclean
 
