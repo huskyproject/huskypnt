@@ -6,36 +6,102 @@
 
 char *langDir = "english";
 
-char *questions[numIdx+1] =
+char *systemConfigTitle = "configuration - system config\n\n";
+tMenuEntry systemConfigEntries[numSystemConfigEntries] =
 {
-  "",
-  "Run the fido-software as which group (default: %s)? ",
-  "Run the fido-software as which user (default: %s)? ",
+  { '1', " 1) fido group: %s\n", groupNameIdx },
+  { '2', " 2) fido-admin user: %s\n", fidoNameIdx },
+  { '3', " 3) allowed users: %s\n", usersIdx },
+  { '4', " 4) libc version: %s\n", libcVersionIdx },
+  { '5', " 5) generate debug versions: %s\n", debugIdx },
+  { '6', " 6) library directory: %s\n", libDirIdx },
+  { '7', " 7) binary directory: %s\n", binDirIdx },
+  { '8', " 8) man-page directory: %s\n", manDirIdx },
+  { '9', " 9) config directory: %s\n", cfgDirIdx },
+  { 'a', " a) logfile directory: %s\n", logDirIdx },
+  { 'b', " b) include directory: %s\n", incDirIdx },
+  { 'c', " c) info directory: %s\n", infoDirIdx },
+  { 'd', " d) html directory: %s\n", htmlDirIdx },
+  { 'e', " e) script directory: %s\n\n", scriptDirIdx },
+};
+
+char *personalConfigTitle = "configuration - personal config\n\n";
+tMenuEntry personalConfigEntries[numPersonalConfigEntries] =
+{
+  { '1', " 1) location: %s\n", locationIdx },
+  { '2', " 2) system operator: %s\n", sysOpNameIdx }
+};
+
+char *fidoDirConfigTitle = "configuration - fido directory config\n\n";
+tMenuEntry fidoDirConfigEntries[numFidoDirConfigEntries] =
+{
+  { '1', " 1) working directory: %s\n", workDirIdx },
+  { '2', " 2) insecure inbound: %s\n", inboundIdx },
+  { '3', " 3) protected inbound: %s\n", protInboundIdx },
+  { '4', " 4) local inbound: %s\n", localInboundIdx },
+  { '5', " 5) outbound: %s\n", outboundIdx },
+  { '6', " 6) temporary inbound: %s\n", tempInboundIdx },
+  { '7', " 7) temporary outbound: %s\n", tempOutboundIdx },
+  { '8', " 8) message base directory: %s\n", msgbaseDirIdx },
+  { '9', " 9) nodelist directory: %s\n", nodelistDirIdx },
+  { 'a', " a) netmail directory: %s\n", netmailDirIdx }
+};
+
+char *commConfigTitle = "configuration - communications setup\n\n";
+tMenuEntry commConfigEntries[numCommConfigEntries] =
+{
+  { '1', " 1) isdn device: %s\n", isdnDevIdx },
+  { '2', " 2) modem device: %s\n", modemDevIdx },
+  { '3', " 3) international prefix: %s\n", internatPrefixIdx },
+  { '4', " 4) local prefix: %s\n", localPrefixIdx },
+  { '5', " 5) voice number: %s\n", voiceNumIdx },
+  { '6', " 6) data number: %s\n", dataNumIdx },
+  { '7', " 7) dialout number: %s\n", amtNumIdx },
+  { '8', " 8) local number: %s\n", localNumIdx },
+  { '9', " 9) international number: %s\n", internatNumIdx }
+};
+
+char *uplinkConfigTitle = "uplink configuration\n\n";
+tMenuEntry uplinkConfigEntries[numUplinkConfigEntries] =
+{
+  { '1', " 1) point number: %s\n", pointNrIdx },
+  { '2', " 2) uplink address: %s\n", uplinkAddrIdx },
+  { '3', " 3) uplink name: %s\n", uplinkNameIdx },
+  { '4', " 4) uplink password: %s\n", uplinkPwdIdx },
+  { '5', " 5) packer: %s\n", packerIdx }
+};
+
+char *homeDirQuestion = "Homeverzeichnis des neuen Users (default: %s)? ";
+
+char *descTexts[numIdx] =
+{
+  "Run the fido-software as which group? \n\n",
+  "Run the fido-software as which user? \n\n",
   "Which users shall be able to use the fido-software\n"
-  "(e.g. \"sascha,tobi\")? ",
-  "Put the libraries into (default: %s): ",
-  "Put the programs into (default: %s): ",
-  "Put the man-pages into (default: %s): ",
-  "Put the configs into (default: %s): ",
-  "Put the log-files into (default: %s): ",
-  "Put the includes into (default: %s): ",
-  "Install as debug-versions (0=no, 1=yes, default: %s)? ",
-  "Does this system base on libc5 or on glibc2 (aka libc6) (libc5/glibc2)? ",
-  "Where do you live? ",
-  "What is your name (first- and surname)? ",
-  "Working directory (default: %s)? ",
-  "Inbound (default: %s)? ",
-  "Protected Inbound (default: %s)? ",
-  "LocalInbound (default: %s)? ",
-  "TempInbound (default: %s)? ",
-  "TempOutbound (default: %s)? ",
-  "Outbound (default: %s)? ",
-  "MsgBaseDir (default: %s)? ",
-  "NodelistDir (default: %s)? ",
-  "NetmailDir (default: %s)? ",
-  "Put the scripts into (default: %s)? ",
-  "ISDN-Port if available (suggested: /dev/ttyI2)? ",
-  "Modem-Port if available (COM1: /dev/ttyS0, COM2: /dev/ttyS1, ...)? ",
+  "(e.g. \"sascha,tobi\")? \n\n",
+  "Put the libraries into: \n\n",
+  "Put the programs into: \n\n",
+  "Put the man-pages into: \n\n",
+  "Put the configs into: \n\n",
+  "Put the log-files into: \n\n",
+  "Put the includes into: \n\n",
+  "Install as debug-versions (0=no, 1=yes, default: %s)? \n\n",
+  "Does this system base on libc5 or on glibc2 (aka libc6) (libc5/glibc2)? \n\n",
+  "Where do you live? \n\n",
+  "What is your name (first- and surname)? \n\n",
+  "Working directory? \n\n",
+  "Inbound? \n\n",
+  "Protected Inbound? \n\n",
+  "LocalInbound? \n\n",
+  "TempInbound? \n\n",
+  "TempOutbound? \n\n",
+  "Outbound? \n\n",
+  "MsgBaseDir? \n\n",
+  "NodelistDir? \n\n",
+  "NetmailDir? \n\n",
+  "Put the scripts into? \n\n",
+  "ISDN-Port if available (suggested: /dev/ttyI2)? \n\n",
+  "Modem-Port if available (COM1: /dev/ttyS0, COM2: /dev/ttyS1, ...)? \n\n",
   "If your COM-port has a FIFO (that's a buffer, found on UARTs of type\n"
   "16550 and 16650), you may set the baudrate as high as your modem\n"
   "supports (usually 57600 or 115200). But if it does not have a FIFO, it\n"
@@ -52,22 +118,23 @@ char *questions[numIdx+1] =
   "Windows it is very probable that you own a COM-port with FIFO, so you\n"
   "may safely use a high baudrate under Linux, too (exceptions confirm the\n"
   "rule :) ).\n"
-  "Baudrate for Modem-Port? ",
-  "International part of phonenumber (e.g. 49 for germany)? ",
-  "Local part of phonenumber (e.g. 641 for Giessen)? ",
-  "Last part of (Voice-)phonenumber (e.g. 3012958)? ",
-  "Last part of (Data-)phonenumber (e.g. 3012959)? ",
-  "Dialout prefix if needed (e.g. 0W)? ",
-  "local prefix (usually 0)? ",
-  "international prefix (usually 00)? ",
-  "Which packer would you like to use (default: %s)? ",
-  "Which point-number did you get (e.g. 5)? ",
-  "What is the address of your uplink (e.g. 2:2435/424)? ",
-  "What is the name of your uplink (first- and surname)? ",
-  "Which password did your uplink give you? ",
-  "Home directory of the new user (default: %s)? ",
-  "Put the documentation on info-format into (default: %s): ",
-  "Put the documentation on html-format into (default: %s): "
+  "Baudrate for Modem-Port? \n\n",
+  "International part of phonenumber (e.g. 49 for germany)? \n\n",
+  "Local part of phonenumber (e.g. 641 for Giessen)? \n\n",
+  "Last part of (Voice-)phonenumber (e.g. 3012958)? \n\n",
+  "Last part of (Data-)phonenumber (e.g. 3012959)? \n\n",
+  "Dialout prefix if needed (e.g. 0W)? \n\n",
+  "local prefix (usually 0)? \n\n",
+  "international prefix (usually 00)? \n\n",
+  "Which packer would you like to use? \n\n",
+  "Which point-number did you get (e.g. 5)? \n\n",
+  "What is the address of your uplink (e.g. 2:2435/424)? \n\n",
+  "What is the name of your uplink (first- and surname)? \n\n",
+  "Which password did your uplink give you? \n\n",
+  "Home directory of the new user? \n\n",
+  "Put the documentation on info-format into: \n\n",
+  "Put the documentation on html-format into: \n\n",
+  ""
 };
 
 char *chooseBossText =
@@ -82,7 +149,7 @@ char *chooseBossText =
   "to transfer the fido mails over the Internet (so-called Fido over IP)\n"
   "makes the cost of any system in the world (that offers Fido over IP)\n"
   "equal.\n"
-  "The following nodes accept points:\n"
+  "The following english-speaking nodes accept points:\n"
   "\n%s\n"
   "Choose an uplink (does not need to be in that list, that are only\n"
   "suggestions) and discuss with him the settings (password etc.)\n"
@@ -98,7 +165,7 @@ char *pleaseInstallProgramsText =
   "Please install all needed programs first.\n";
 char *pleaseCopyFilesText =
   "Please copy all needed files into the current directory first.\n";
-char *groupExistsText = "\aGroup '%s' already exists, please add the users (%s)  to it on your own.\n";
+char *groupExistsText = "\aGroup '%s' already exists, please add the users (%s) to it on your own.\n";
 char *userExistsText = "\aUser '%s' already exists.\n";
 char *createdGroupText = "Created group %s (ID: %d) with the users %s in it.\n";
 char *createdUserText = "Created user %s (ID: %d) in group #%d.\n"

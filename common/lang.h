@@ -5,7 +5,29 @@
 
 extern char *langDir;
 
-extern char *questions[numIdx+1];
+#define numSystemConfigEntries 14
+extern char *systemConfigTitle;
+extern tMenuEntry systemConfigEntries[numSystemConfigEntries];
+
+#define numPersonalConfigEntries 2
+extern char *personalConfigTitle;
+extern tMenuEntry personalConfigEntries[numPersonalConfigEntries];
+
+#define numFidoDirConfigEntries 10
+extern char *fidoDirConfigTitle;
+extern tMenuEntry fidoDirConfigEntries[numFidoDirConfigEntries];
+
+#define numCommConfigEntries 9
+extern char *commConfigTitle;
+extern tMenuEntry commConfigEntries[numCommConfigEntries];
+
+#define numUplinkConfigEntries 5
+extern char *uplinkConfigTitle;
+extern tMenuEntry uplinkConfigEntries[numUplinkConfigEntries];
+
+extern char *descTexts[numIdx];
+
+extern char *homeDirQuestion;
 extern char *chooseBossText;
 extern char *pressReturnText;
 extern char *allrightText;

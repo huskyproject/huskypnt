@@ -1,6 +1,6 @@
-/* setup-script for HuskyPoint/Lnx
+/* HuskyPoint
    author: Sascha Silbe
-   last change: 12.04.00
+   last change: see CVS log :)
 */
 
 #include <unistd.h>
@@ -66,74 +66,134 @@ int checkfiles()
   return ok;
 }
 
+char menuChoice(char *validChoices)
+{
+  char c;
+  char *s;
+  int ok = 1;
+
+  s = malloc(5);
+  while (ok != 0)
+  {
+    printf("your choice: ");
+    fgets(s, 5, stdin);
+    c = *s;
+    if (strchr(validChoices, c) != NULL) ok = 0;
+    else printf("Invalid choice! Try again.\n");
+  }
+  free(s);
+
+  return c;
+}
+
+void editVar(int idx)
+{
+  char *newVal;
+
+  clrscr();
+  printf(descTexts[idx]);
+  printf("old value: %s\n"
+	 "new value: ", cfg[idx]);
+  newVal = malloc(1024);
+  *newVal = 0;
+  fgets(newVal, 1024, stdin);
+
+  // strip CR/LF
+  while ((*newVal != 0) && ((newVal[strlen(newVal) - 1] == 13) ||
+			    (newVal[strlen(newVal) - 1] == 10)))
+    newVal[strlen(newVal) - 1] = 0;
+
+  free(cfg[idx]);
+  cfg[idx] = strdup(newVal);
+  free(newVal);
+}
+
+void useMenu(char *title, int numEntries, tMenuEntry *entries)
+{
+  int ok = 1;
+  int c;
+  int i;
+  char *keys;
+
+  keys = malloc(numEntries + 2);
+  keys[numEntries] = 'x';
+  keys[numEntries + 1] = 0;
+
+  while (ok != 0)
+  {
+    clrscr();
+    printf(title);
+
+    for (i = 0; i < numEntries; i++)
+    {
+      printf(entries[i].text, cfg[entries[i].idx]);
+      keys[i] = entries[i].key;
+    }
+
+    printf("\n"
+	   " x) return\n"
+	   "\n");
+
+    c = menuChoice(keys);
+    if (c != 'x')
+    {
+      editVar(entries[strchr(keys, c) - keys].idx);
+    }
+    else ok = 0;
+  }
+}
+
 // get config (without uplink)
 void getconfig()
 {
-  int ok;
+  int ok = 1;
+  int c;
+  int i;
 
-  ok = 1;
+  for (i = 0; i < numIdx; i++) cfg[i] = strdup(defaults[i]);
+
   while (ok != 0)
   {
-    Cfg.groupName = ask(questions[groupNameIdx], defaults[groupNameIdx]);
-    Cfg.fidoName = ask(questions[fidoNameIdx], defaults[fidoNameIdx]);
-    Cfg.userName = Cfg.fidoName;
-//    Cfg.users = ask(questions[usersIdx], defaults[usersIdx]);
-    Cfg.users = strdup("");
-    Cfg.libcVersion = ask(questions[libcVersionIdx], defaults[libcVersionIdx]);
-    Cfg.debug = ask(questions[debugIdx], defaults[debugIdx]);
-    Cfg.libDir = ask(questions[libDirIdx], defaults[libDirIdx]);
-    Cfg.binDir = ask(questions[binDirIdx], defaults[binDirIdx]);
-    Cfg.manDir = ask(questions[manDirIdx], defaults[manDirIdx]);
-    Cfg.cfgDir = ask(questions[cfgDirIdx], defaults[cfgDirIdx]);
-    Cfg.logDir = ask(questions[logDirIdx], defaults[logDirIdx]);
-    Cfg.incDir = ask(questions[incDirIdx], defaults[incDirIdx]);
-//    Cfg.infoDir = ask(questions[infoDirIdx], defaults[infoDirIdx]);
-    Cfg.infoDir = strdup("");
-//    Cfg.htmlDir = ask(questions[htmlDirIdx], defaults[htmlDirIdx]);
-    Cfg.htmlDir = strdup("");
+    clrscr();
+    printf("configuration - main menu\n"
+	   "\n"
+	   " 1) system config\n"
+	   " 2) personal config\n"
+	   " 3) fido directory config\n"
+	   " 4) communications setup\n"
+	   "\n"
+	   " x) continue\n"
+	   "\n");
 
-    ok = askAllright();
+    c = menuChoice("1234x");
+    switch (c)
+    {
+    case '1':
+      useMenu(systemConfigTitle, numSystemConfigEntries, systemConfigEntries);
+      break;
+
+    case '2':
+      useMenu(personalConfigTitle, numPersonalConfigEntries,
+	      personalConfigEntries);
+      break;
+
+    case '3':
+      useMenu(fidoDirConfigTitle, numFidoDirConfigEntries,
+	      fidoDirConfigEntries);
+      break;
+
+    case '4':
+      useMenu(commConfigTitle, numCommConfigEntries, commConfigEntries);
+      break;
+
+    case 'x':
+      ok = 0;
+      break;
+    }
   }
-  printf("\n");
 
-  ok = 1;
-  while (ok != 0)
-  {
-    Cfg.location = ask(questions[locationIdx], defaults[locationIdx]);
-    Cfg.sysOpName = ask(questions[sysOpNameIdx], defaults[sysOpNameIdx]);
-    Cfg.workDir = ask(questions[workDirIdx], defaults[workDirIdx]);
-    Cfg.inbound = ask(questions[inboundIdx], defaults[inboundIdx]);
-    Cfg.protInbound = ask(questions[protInboundIdx], defaults[protInboundIdx]);
-    Cfg.localInbound = ask(questions[localInboundIdx], defaults[localInboundIdx]);
-    Cfg.tempInbound = ask(questions[tempInboundIdx], defaults[tempInboundIdx]);
-    Cfg.tempOutbound = ask(questions[tempOutboundIdx], defaults[tempOutboundIdx]);
-    Cfg.outbound = ask(questions[outboundIdx], defaults[outboundIdx]);
-    Cfg.msgbaseDir = ask(questions[msgbaseDirIdx], defaults[msgbaseDirIdx]);
-    Cfg.nodelistDir = ask(questions[nodelistDirIdx], defaults[nodelistDirIdx]);
-    Cfg.netmailDir = ask(questions[netmailDirIdx], defaults[netmailDirIdx]);
-    Cfg.scriptDir = ask(questions[scriptDirIdx], defaults[scriptDirIdx]);
-
-    ok = askAllright();
-  }
-  printf("\n");
-
-  ok = 1;
-  while (ok != 0)
-  {
-    Cfg.isdnDev = ask(questions[isdnDevIdx], defaults[isdnDevIdx]);
-    Cfg.modemDev = ask(questions[modemDevIdx], defaults[modemDevIdx]);
-    Cfg.modemBaud = ask(questions[modemBaudIdx], defaults[modemBaudIdx]);
-    Cfg.internatPrefix = ask(questions[internatPrefixIdx], defaults[internatPrefixIdx]);
-    Cfg.localPrefix = ask(questions[localPrefixIdx], defaults[localPrefixIdx]);
-    Cfg.voiceNum = ask(questions[voiceNumIdx], defaults[voiceNumIdx]);
-    Cfg.dataNum = ask(questions[dataNumIdx], defaults[dataNumIdx]);
-    Cfg.amtNum = ask(questions[amtNumIdx], defaults[amtNumIdx]);
-    Cfg.localNum = ask(questions[localNumIdx], defaults[localNumIdx]);
-    Cfg.internatNum = ask(questions[internatNumIdx], defaults[internatNumIdx]);
-
-    ok = askAllright();
-  }
-  printf("\n");
+  cfg[userNameIdx] = cfg[fidoNameIdx];
+  clrscr();
 }
 
 void chooseboss()
@@ -154,18 +214,7 @@ void chooseboss()
 // get config from uplink
 void getuplinkconfig()
 {
-  int ok = 1;
-
-  while (ok != 0)
-  {
-    Cfg.pointNr = ask(questions[pointNrIdx], defaults[pointNrIdx]);
-    Cfg.uplinkAddr = ask(questions[uplinkAddrIdx], defaults[uplinkAddrIdx]);
-    Cfg.uplinkName = ask(questions[uplinkNameIdx], defaults[uplinkNameIdx]);
-    Cfg.uplinkPwd = ask(questions[uplinkPwdIdx], defaults[uplinkPwdIdx]);
-    Cfg.packer = ask(questions[packerIdx], defaults[packerIdx]);
-
-    ok = askAllright();
-  }
+  useMenu(uplinkConfigTitle, numUplinkConfigEntries, uplinkConfigEntries);
 }
 
 // returns 0 if successfull
@@ -176,149 +225,151 @@ int createdirs()
 
   printf(creatingDirsText);
 
-  if (direxist(Cfg.libDir) != 0)
-    if (mkdirp(Cfg.libDir) != 0) return 1;
-  if (direxist(Cfg.binDir) != 0)
-    if (mkdirp(Cfg.binDir) != 0) return 1;
-  if (direxist(Cfg.manDir) != 0)
-    if (mkdirp(Cfg.manDir) != 0) return 1;
-  sprintf(dirname, "%s/man1", Cfg.manDir);
+  if (direxist(cfg[libDirIdx]) != 0)
+    if (mkdirp(cfg[libDirIdx]) != 0) return 1;
+  if (direxist(cfg[binDirIdx]) != 0)
+    if (mkdirp(cfg[binDirIdx]) != 0) return 1;
+  if (direxist(cfg[manDirIdx]) != 0)
+    if (mkdirp(cfg[manDirIdx]) != 0) return 1;
+  sprintf(dirname, "%s" dirSepS "man1", cfg[manDirIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  sprintf(dirname, "%s/man2", Cfg.manDir);
+  sprintf(dirname, "%s" dirSepS "man2", cfg[manDirIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  sprintf(dirname, "%s/man3", Cfg.manDir);
+  sprintf(dirname, "%s" dirSepS "man3", cfg[manDirIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  sprintf(dirname, "%s/man4", Cfg.manDir);
+  sprintf(dirname, "%s" dirSepS "man4", cfg[manDirIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  sprintf(dirname, "%s/man5", Cfg.manDir);
+  sprintf(dirname, "%s" dirSepS "man5", cfg[manDirIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  sprintf(dirname, "%s/man6", Cfg.manDir);
+  sprintf(dirname, "%s" dirSepS "man6", cfg[manDirIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  sprintf(dirname, "%s/man7", Cfg.manDir);
+  sprintf(dirname, "%s" dirSepS "man7", cfg[manDirIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  sprintf(dirname, "%s/man8", Cfg.manDir);
+  sprintf(dirname, "%s" dirSepS "man8", cfg[manDirIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  if (direxist(Cfg.incDir) != 0)
-    if (mkdirp(Cfg.incDir) != 0) return 1;
-  if (direxist(Cfg.cfgDir) != 0)
-    if (mkdirp(Cfg.cfgDir) != 0) return 1;
-  if (direxist(Cfg.logDir) != 0)
-    if (mkdirp(Cfg.logDir) != 0) return 1;
-  if (direxist(Cfg.scriptDir) != 0)
-    if (mkdirp(Cfg.scriptDir) != 0) return 1;
-  if (direxist(Cfg.workDir) != 0)
-    if (mkdirp(Cfg.workDir) != 0) return 1;
-  sprintf(dirname, "%s/dupes", Cfg.workDir);
+  if (direxist(cfg[incDirIdx]) != 0)
+    if (mkdirp(cfg[incDirIdx]) != 0) return 1;
+  if (direxist(cfg[cfgDirIdx]) != 0)
+    if (mkdirp(cfg[cfgDirIdx]) != 0) return 1;
+  if (direxist(cfg[logDirIdx]) != 0)
+    if (mkdirp(cfg[logDirIdx]) != 0) return 1;
+  if (direxist(cfg[scriptDirIdx]) != 0)
+    if (mkdirp(cfg[scriptDirIdx]) != 0) return 1;
+  if (direxist(cfg[workDirIdx]) != 0)
+    if (mkdirp(cfg[workDirIdx]) != 0) return 1;
+  sprintf(dirname, "%s" dirSepS "dupes", cfg[workDirIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  sprintf(dirname, "%s/src", Cfg.homeDir);
+  sprintf(dirname, "%s" dirSepS "src", cfg[homeDirIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  if (direxist(Cfg.inbound) != 0)
-    if (mkdirp(Cfg.inbound) != 0) return 1;
-  sprintf(dirname, "%s/tmp", Cfg.inbound);
+  if (direxist(cfg[inboundIdx]) != 0)
+    if (mkdirp(cfg[inboundIdx]) != 0) return 1;
+  sprintf(dirname, "%s" dirSepS "tmp", cfg[inboundIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  if (direxist(Cfg.localInbound) != 0)
-    if (mkdirp(Cfg.localInbound) != 0) return 1;
-  if (direxist(Cfg.tempInbound) != 0)
-    if (mkdirp(Cfg.tempInbound) != 0) return 1;
-  if (direxist(Cfg.protInbound) != 0)
-    if (mkdirp(Cfg.protInbound) != 0) return 1;
-  sprintf(dirname, "%s/tmp", Cfg.protInbound);
+  if (direxist(cfg[localInboundIdx]) != 0)
+    if (mkdirp(cfg[localInboundIdx]) != 0) return 1;
+  if (direxist(cfg[tempInboundIdx]) != 0)
+    if (mkdirp(cfg[tempInboundIdx]) != 0) return 1;
+  if (direxist(cfg[protInboundIdx]) != 0)
+    if (mkdirp(cfg[protInboundIdx]) != 0) return 1;
+  sprintf(dirname, "%s" dirSepS "tmp", cfg[protInboundIdx]);
   if (direxist(dirname) != 0)
     if (mkdirp(dirname) != 0) return 1;
-  if (direxist(Cfg.outbound) != 0)
-    if (mkdirp(Cfg.outbound) != 0) return 1;
-  if (direxist(Cfg.tempOutbound) != 0)
-    if (mkdirp(Cfg.tempOutbound) != 0) return 1;
-  if (direxist(Cfg.msgbaseDir) != 0)
-    if (mkdirp(Cfg.msgbaseDir) != 0) return 1;
-  if (direxist(Cfg.nodelistDir) != 0)
-    if (mkdirp(Cfg.nodelistDir) != 0) return 1;
-  if (direxist(Cfg.netmailDir) != 0)
-    if (mkdirp(Cfg.netmailDir) != 0) return 1;
+  if (direxist(cfg[outboundIdx]) != 0)
+    if (mkdirp(cfg[outboundIdx]) != 0) return 1;
+  if (direxist(cfg[tempOutboundIdx]) != 0)
+    if (mkdirp(cfg[tempOutboundIdx]) != 0) return 1;
+  if (direxist(cfg[msgbaseDirIdx]) != 0)
+    if (mkdirp(cfg[msgbaseDirIdx]) != 0) return 1;
+  if (direxist(cfg[nodelistDirIdx]) != 0)
+    if (mkdirp(cfg[nodelistDirIdx]) != 0) return 1;
+  if (direxist(cfg[netmailDirIdx]) != 0)
+    if (mkdirp(cfg[netmailDirIdx]) != 0) return 1;
 
   printf(settingRightsText);
 
-  setMode(Cfg.libDir, 493); // dec. 493 = octal 0755
-  setMode(Cfg.binDir, 493);
-  setMode(Cfg.manDir, 493);
-  sprintf(dirname, "%s/man1", Cfg.manDir); setMode(dirname, 493);
-  sprintf(dirname, "%s/man2", Cfg.manDir); setMode(dirname, 493);
-  sprintf(dirname, "%s/man3", Cfg.manDir); setMode(dirname, 493);
-  sprintf(dirname, "%s/man4", Cfg.manDir); setMode(dirname, 493);
-  sprintf(dirname, "%s/man5", Cfg.manDir); setMode(dirname, 493);
-  sprintf(dirname, "%s/man6", Cfg.manDir); setMode(dirname, 493);
-  sprintf(dirname, "%s/man7", Cfg.manDir); setMode(dirname, 493);
-  sprintf(dirname, "%s/man8", Cfg.manDir); setMode(dirname, 493);
-  setMode(Cfg.incDir, 493);
-  setMode(Cfg.cfgDir, 493);
-  setMode(Cfg.logDir, 448); // dec. 448 = octal 0700
-  setMode(Cfg.scriptDir, 493);
-  setMode(Cfg.workDir, 493);
-  setMode(Cfg.inbound, 448);
-  setMode(Cfg.localInbound, 448);
-  setMode(Cfg.tempInbound, 448);
-  setMode(Cfg.protInbound, 448);
-  setMode(Cfg.outbound, 448);
-  setMode(Cfg.tempOutbound, 448);
-  setMode(Cfg.msgbaseDir, 493);
-  setMode(Cfg.netmailDir, 448);
-  setMode(Cfg.nodelistDir, 493);
-  sprintf(dirname, "%s/dupes", Cfg.workDir); setMode(dirname, 493);
-  sprintf(dirname, "%s/src", Cfg.homeDir); setMode(dirname, 493);
-  sprintf(dirname, "%s/tmp", Cfg.inbound); setMode(dirname, 448);
-  sprintf(dirname, "%s/tmp", Cfg.protInbound); setMode(dirname, 448);
+  setMode(cfg[libDirIdx], 493); // dec. 493 = octal 0755
+  setMode(cfg[binDirIdx], 493);
+  setMode(cfg[manDirIdx], 493);
+  sprintf(dirname, "%s" dirSepS "man1", cfg[manDirIdx]); setMode(dirname, 493);
+  sprintf(dirname, "%s" dirSepS "man2", cfg[manDirIdx]); setMode(dirname, 493);
+  sprintf(dirname, "%s" dirSepS "man3", cfg[manDirIdx]); setMode(dirname, 493);
+  sprintf(dirname, "%s" dirSepS "man4", cfg[manDirIdx]); setMode(dirname, 493);
+  sprintf(dirname, "%s" dirSepS "man5", cfg[manDirIdx]); setMode(dirname, 493);
+  sprintf(dirname, "%s" dirSepS "man6", cfg[manDirIdx]); setMode(dirname, 493);
+  sprintf(dirname, "%s" dirSepS "man7", cfg[manDirIdx]); setMode(dirname, 493);
+  sprintf(dirname, "%s" dirSepS "man8", cfg[manDirIdx]); setMode(dirname, 493);
+  setMode(cfg[incDirIdx], 493);
+  setMode(cfg[cfgDirIdx], 493);
+  setMode(cfg[logDirIdx], 448); // dec. 448 = octal 0700
+  setMode(cfg[scriptDirIdx], 493);
+  setMode(cfg[workDirIdx], 493);
+  setMode(cfg[inboundIdx], 448);
+  setMode(cfg[localInboundIdx], 448);
+  setMode(cfg[tempInboundIdx], 448);
+  setMode(cfg[protInboundIdx], 448);
+  setMode(cfg[outboundIdx], 448);
+  setMode(cfg[tempOutboundIdx], 448);
+  setMode(cfg[msgbaseDirIdx], 493);
+  setMode(cfg[netmailDirIdx], 448);
+  setMode(cfg[nodelistDirIdx], 493);
+  sprintf(dirname, "%s" dirSepS "dupes", cfg[workDirIdx]);
+  setMode(dirname, 493);
+  sprintf(dirname, "%s" dirSepS "src", cfg[homeDirIdx]); setMode(dirname, 493);
+  sprintf(dirname, "%s" dirSepS "tmp", cfg[inboundIdx]); setMode(dirname, 448);
+  sprintf(dirname, "%s" dirSepS "tmp", cfg[protInboundIdx]);
+  setMode(dirname, 448);
 
   // parent directory of outbound (.../out/zone -> .../out)
-  pos = strrchr(Cfg.outbound, '/') - Cfg.outbound;
-  strncpy(dirname, Cfg.outbound, pos); dirname[pos] = 0;
+  pos = strrchr(cfg[outboundIdx], '/') - cfg[outboundIdx];
+  strncpy(dirname, cfg[outboundIdx], pos); dirname[pos] = 0;
   setMode(dirname, 448);
 
   // dec. 483 = octal 0600
-  if (strlen(Cfg.isdnDev) > 0) setMode(Cfg.isdnDev, 483); 
-  if (strlen(Cfg.modemDev) > 0) setMode(Cfg.isdnDev, 483);
+  if (strlen(cfg[isdnDevIdx]) > 0) setMode(cfg[isdnDevIdx], 483); 
+  if (strlen(cfg[modemDevIdx]) > 0) setMode(cfg[isdnDevIdx], 483);
 
-  setOwner(Cfg.cfgDir, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.logDir, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.scriptDir, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.workDir, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.inbound, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.localInbound, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.protInbound, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.tempInbound, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.outbound, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.tempOutbound, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.msgbaseDir, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.nodelistDir, Cfg.fidoName, Cfg.groupName);
-  setOwner(Cfg.netmailDir, Cfg.fidoName, Cfg.groupName);
-  sprintf(dirname, "%s/dupes", Cfg.workDir);
-  setOwner(dirname, Cfg.fidoName, Cfg.groupName);
-  sprintf(dirname, "%s/src", Cfg.homeDir);
-  setOwner(dirname, Cfg.fidoName, Cfg.groupName);
-  sprintf(dirname, "%s/tmp", Cfg.inbound);
-  setOwner(dirname, Cfg.fidoName, Cfg.groupName);
-  sprintf(dirname, "%s/tmp", Cfg.protInbound);
-  setOwner(dirname, Cfg.fidoName, Cfg.groupName);
+  setOwner(cfg[cfgDirIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[logDirIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[scriptDirIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[workDirIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[inboundIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[localInboundIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[protInboundIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[tempInboundIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[outboundIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[tempOutboundIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[msgbaseDirIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[nodelistDirIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  setOwner(cfg[netmailDirIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  sprintf(dirname, "%s" dirSepS "dupes", cfg[workDirIdx]);
+  setOwner(dirname, cfg[fidoNameIdx], cfg[groupNameIdx]);
+  sprintf(dirname, "%s" dirSepS "src", cfg[homeDirIdx]);
+  setOwner(dirname, cfg[fidoNameIdx], cfg[groupNameIdx]);
+  sprintf(dirname, "%s" dirSepS "tmp", cfg[inboundIdx]);
+  setOwner(dirname, cfg[fidoNameIdx], cfg[groupNameIdx]);
+  sprintf(dirname, "%s" dirSepS "tmp", cfg[protInboundIdx]);
+  setOwner(dirname, cfg[fidoNameIdx], cfg[groupNameIdx]);
 
   // parent directory of outbound (.../out/zone -> .../out)
-  pos = strrchr(Cfg.outbound, '/') - Cfg.outbound;
-  strncpy(dirname, Cfg.outbound, pos); dirname[pos] = 0;
-  setOwner(dirname, Cfg.fidoName, Cfg.groupName);
+  pos = strrchr(cfg[outboundIdx], dirSepC) - cfg[outboundIdx];
+  strncpy(dirname, cfg[outboundIdx], pos); dirname[pos] = 0;
+  setOwner(dirname, cfg[fidoNameIdx], cfg[groupNameIdx]);
 
-  if (Cfg.isdnDev != NULL)
-    setOwner(Cfg.isdnDev, Cfg.fidoName, Cfg.groupName);
-  if (Cfg.modemDev != NULL)
-    setOwner(Cfg.modemDev, Cfg.fidoName, Cfg.groupName);
+  if (cfg[isdnDevIdx] != NULL)
+    setOwner(cfg[isdnDevIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
+  if (cfg[modemDevIdx] != NULL)
+    setOwner(cfg[modemDevIdx], cfg[fidoNameIdx], cfg[groupNameIdx]);
 
   printf(createdDirsText);
 
@@ -328,73 +379,48 @@ int createdirs()
 // returns 0 if successfull
 int unpacksources(char *userName, char *groupName)
 {
-  char dirname[1024];
-  char cwd[1024];
-  char cmdline[1024];
+  char *dirname;
+  char *cwd;
+  char *fname;
   int i;
   int rc;
 
   printf(unzipSourcesText);
 
+  cwd = malloc(1024);
   getcwd(cwd, 1024);
-  sprintf(dirname, "%s/src", Cfg.homeDir);
-  rc = chdir(dirname);
+  dirname = malloc(strlen(cfg[homeDirIdx]) + 5);
+  sprintf(dirname, "%s" dirSepS "src", cfg[homeDirIdx]);
 
+  rc = chdir(dirname);
   if (rc != 0)
   {
     printf(chdirErrorText, dirname);
+    free(dirname);
+    free(cwd);
 
-    return 1;
+    return rc;
   }
 
   for (i = 0; i < numZipFiles; i++)
   {
-    sprintf(cmdline, "unzip -q %s/%s", cwd, zipFiles[i]);
-    rc = system(cmdline);
+    fname = malloc(strlen(cwd) + strlen(zipFiles[i]) + 2);
+    sprintf(fname, "%s" dirSepS "%s", cwd, zipFiles[i]);
+
+    rc = unpackFile(fname);
+    if (rc != 0)
+    {
+      chdir(cwd);
+      free(dirname);
+      free(cwd);
+
+      return rc;
+    }
   }
 
   chdir(cwd);
-
-  return 0;
-}
-
-// returns 0 is successfull
-int createmakeconfig(char *userName, char *groupName)
-{
-  char *fname, *fname2;
-
-  printf(creatingMakefileCfgsText);
-
-  fname = malloc(strlen(Cfg.homeDir)+18);
-  fname2 = malloc(strlen(langDir)+14);
-  sprintf(fname, "%s" dirSepS "src" dirSepS "huskymak.cfg", Cfg.homeDir);
-  sprintf(fname2, "%s" dirSepS "huskymak.cfg", langDir);
-  if (processTemplate(fname2, fname) != 0)
-  {
-    free(fname);
-    free(fname2);
-
-    return 1;
-  }
-  free(fname);
-  free(fname2);
-
-  fname = malloc(strlen(Cfg.homeDir)+19);
-  fname2 = malloc(strlen(langDir)+14);
-  sprintf(fname, "%s" dirSepS "src" dirSepS "ifcico" dirSepS "CONFIG",
-	  Cfg.homeDir);
-  sprintf(fname2, "%s" dirSepS "ifcicomk.cfg", langDir);
-  if (processTemplate(fname2, fname) != 0)
-  {
-    free(fname);
-    free(fname2);
-
-    return 1;
-  }
-  free(fname);
-  free(fname2);
-
-  printf(createdMakefileCfgsText);
+  free(dirname);
+  free(cwd);
 
   return 0;
 }
@@ -408,8 +434,8 @@ int doCompile(char *name, char *makeCommand)
 
   getcwd(cwd, 1024);
 
-  dirname = malloc(strlen(Cfg.homeDir)+strlen(name)+6);
-  sprintf(dirname, "%s/src/%s", Cfg.homeDir, name);
+  dirname = malloc(strlen(cfg[homeDirIdx])+strlen(name)+6);
+  sprintf(dirname, "%s" dirSepS "src" dirSepS "%s", cfg[homeDirIdx], name);
   if (chdir(dirname) != 0)
   {
     printf(chdirErrorText, dirname);
@@ -438,8 +464,8 @@ int doInstall(char *name, char *makeCommand)
 
   getcwd(cwd, 1024);
 
-  dirname = malloc(strlen(Cfg.homeDir)+strlen(name)+6);
-  sprintf(dirname, "%s/src/%s", Cfg.homeDir, name);
+  dirname = malloc(strlen(cfg[homeDirIdx])+strlen(name)+6);
+  sprintf(dirname, "%s" dirSepS "src" dirSepS "%s", cfg[homeDirIdx], name);
   if (chdir(dirname) != 0)
   {
     printf(chdirErrorText, dirname);
@@ -475,27 +501,13 @@ int compilefconf(char *userName, char *groupName)
 int compileprogs(char *userName, char *groupName)
 {
   int rc;
+  int i;
 
-  rc = doCompile("hpt", "make");
-  if (rc != 0) return rc;
-
-  rc = doCompile("hptutil", "make");
-  if (rc != 0) return rc;
-
-  rc = doCompile("sqpack", "make");
-  if (rc != 0) return rc;
-
-  rc = doCompile("mpost", "make");
-  if (rc != 0) return rc;
-
-  rc = doCompile("msged", "make");
-  if (rc != 0) return rc;
-
-  rc = doCompile("husky-common", "make");
-  if (rc != 0) return rc;
-
-  rc = doCompile("ifcico", "make");
-  if (rc != 0) return rc;
+  for (i = 0; i < numPrograms; i++)
+  {
+    rc = doCompile(programs[i], "make");
+    if (rc != 0) return rc;
+  }
 
   return 0;
 }
@@ -516,74 +528,82 @@ int installfconf()
 int installprogs()
 {
   int rc;
+  int i;
 
-  rc = doInstall("hpt", "make install");
-  if (rc != 0) return rc;
+  for (i = 0; i < numPrograms; i++)
+  {
+    rc = doInstall(programs[i], "make install");
+    if (rc != 0) return rc;
+  }
 
-  rc = doInstall("hptutil", "make install");
-  if (rc != 0) return rc;
+  return 0;
+}
 
-  rc = doInstall("sqpack", "make install");
-  if (rc != 0) return rc;
+// returns 0 is successfull
+int createMakeConfig()
+{
+  char *src, *dest;
+  int i;
+  int rc;
 
-  rc = doInstall("mpost", "make install");
-  if (rc != 0) return rc;
+  printf(creatingMakefileCfgsText);
 
-  rc = doInstall("msged", "make install");
-  if (rc != 0) return rc;
+  for (i = 0; i < numMakeCfgFiles; i++)
+  {
+    dest = malloc(strlen(cfg[homeDirIdx])+strlen(makeCfgFiles[i].destFile)+2);
+    sprintf(dest, "%s" dirSepS "%s", cfg[homeDirIdx],
+	    makeCfgFiles[i].destFile);
+    if (makeCfgFiles[i].sourceFile != NULL)
+    {
+      src = malloc(strlen(langDir)+strlen(makeCfgFiles[i].sourceFile)+2);
+      sprintf(src, "%s" dirSepS "%s", langDir, makeCfgFiles[i].sourceFile);
+      rc = processTemplate(src, dest);
+      free(src);
+    }
+    else rc = touchFile(dest);
 
-  rc = doInstall("husky-common", "make install");
-  if (rc != 0) return rc;
+    setMode(dest, makeCfgFiles[i].destMode);
+    free(dest);
 
-  rc = doInstall("ifcico", "make install");
-  if (rc != 0) return rc;
+    if (rc != 0) return rc;
+  }
+
+  printf(createdMakefileCfgsText);
 
   return 0;
 }
 
 // returns 0 if successfull
-int createconfig(char *userName, char *groupName)
+int createGlobalConfig(char *userName, char *groupName)
 {
-  char fname[1024], fname2[1024];
+  char *src, *dest;
+  int i;
+  int rc;
 
   printf(creatingCfgText);
 
   // set permission mask
   setUmask(0022);
 
-  sprintf(fname, "%s" dirSepS "config", Cfg.cfgDir);
-  sprintf(fname2, "%s" dirSepS "fconf.cfg", langDir);
-  if (processTemplate(fname2, fname) != 0) return 1;
-  setMode(fname, 0644);
+  for (i = 0; i < numGlobalCfgFiles; i++)
+  {
+    dest = malloc(strlen(cfg[cfgDirIdx])+strlen(globalCfgFiles[i].destFile)+2);
+    sprintf(dest, "%s" dirSepS "%s", cfg[cfgDirIdx],
+	    globalCfgFiles[i].destFile);
+    if (globalCfgFiles[i].sourceFile != NULL)
+    {
+      src = malloc(strlen(langDir)+strlen(globalCfgFiles[i].sourceFile)+2);
+      sprintf(src, "%s" dirSepS "%s", langDir, globalCfgFiles[i].sourceFile);
+      rc = processTemplate(src, dest);
+      free(src);
+    }
+    else rc = touchFile(dest);
 
-  sprintf(fname, "%s" dirSepS "links.cfg", Cfg.cfgDir);
-  sprintf(fname2, "%s" dirSepS "links.cfg", langDir);
-  if (processTemplate(fname2, fname) != 0) return 1;
-  setMode(fname, 0600);
+    setMode(dest, globalCfgFiles[i].destMode);
+    free(dest);
 
-  sprintf(fname, "%s" dirSepS "msgbase.cfg", Cfg.cfgDir);
-  if (touchFile(fname) != 0) return 1;
-  setMode(fname, 0644);
-
-  sprintf(fname, "%s" dirSepS "huskyui.cfg", Cfg.cfgDir);
-  sprintf(fname2, "%s" dirSepS "huskyui.cfg", langDir);
-  if (processTemplate(fname2, fname) != 0) return 1;
-  setMode(fname, 0644);
-
-  sprintf(fname, "%s" dirSepS "msged.cfg", Cfg.cfgDir);
-  sprintf(fname2, "%s" dirSepS "msgedg.cfg", langDir);
-  if (processTemplate(fname2, fname) != 0) return 1;
-  setMode(fname, 0644);
-
-  sprintf(fname, "%s" dirSepS "ifcico.cfg", Cfg.cfgDir);
-  sprintf(fname2, "%s" dirSepS "ifcico.cfg", langDir);
-  if (processTemplate(fname2, fname) != 0) return 1;
-  setMode(fname, 0644);
-
-  sprintf(fname, "%s" dirSepS "password.lst", Cfg.cfgDir);
-  sprintf(fname2, "%s" dirSepS "password.lst", langDir);
-  if (processTemplate(fname2, fname) != 0) return 1;
-  setMode(fname, 0600);
+    if (rc != 0) return rc;
+  }
 
   printf(createdCfgText);
 
@@ -621,8 +641,9 @@ int copyNodelists(char *userName, char *groupName)
     {
       char *destname;
 
-      destname = malloc(strlen(dirent->d_name)+strlen(Cfg.nodelistDir)+2);
-      sprintf(destname, "%s/%s", Cfg.nodelistDir, dirent->d_name);
+      destname = malloc(strlen(dirent->d_name)+strlen(cfg[nodelistDirIdx])+2);
+      sprintf(destname, "%s" dirSepS "%s", cfg[nodelistDirIdx],
+	      dirent->d_name);
       copyFile(dirent->d_name, destname);
       free(destname);
     }
@@ -644,8 +665,8 @@ int copyScripts()
 
   printf(copyingScriptsText);
 
-  dirname = malloc(strlen(Cfg.homeDir)+13);
-  sprintf(dirname, "%s/src/scripts", Cfg.homeDir);
+  dirname = malloc(strlen(cfg[homeDirIdx])+13);
+  sprintf(dirname, "%s" dirSepS "src" dirSepS "scripts", cfg[homeDirIdx]);
   dir = opendir(dirname);
   if (dir == NULL)
   {
@@ -664,9 +685,9 @@ int copyScripts()
     if (dirent->d_name[0] != '.')
     {
       srcname = malloc(strlen(dirent->d_name)+strlen(dirname)+2);
-      destname = malloc(strlen(dirent->d_name)+strlen(Cfg.scriptDir)+2);
-      sprintf(srcname, "%s/%s", dirname, dirent->d_name);
-      sprintf(destname, "%s/%s", Cfg.scriptDir, dirent->d_name);
+      destname = malloc(strlen(dirent->d_name)+strlen(cfg[scriptDirIdx])+2);
+      sprintf(srcname, "%s" dirSepS "%s", dirname, dirent->d_name);
+      sprintf(destname, "%s" dirSepS "%s", cfg[scriptDirIdx], dirent->d_name);
       processTemplate(srcname, destname);
       setMode(destname, 0755);
       free(srcname);
@@ -684,65 +705,12 @@ int copyScripts()
   return 0;
 }
 
-// returns 0 if successfull
-int compileNodelists(char *userName, char *groupName)
-{
-  char *cmdline;
-  int rc;
-
-  printf(compilingNodelistsText);
-
-  cmdline = malloc(strlen(Cfg.binDir)+9);
-  sprintf(cmdline, "%s/ifindex", Cfg.binDir);
-  rc = system(cmdline);
-
-  if (rc == 0) printf(compiledNodelistsText);
-
-  return rc;
-}
-
 void disposeCfg()
 {
-  nfree(Cfg.groupName);
-  nfree(Cfg.fidoName);
-  nfree(Cfg.users);
-  nfree(Cfg.libDir);
-  nfree(Cfg.binDir);
-  nfree(Cfg.manDir);
-  nfree(Cfg.cfgDir);
-  nfree(Cfg.logDir);
-  nfree(Cfg.incDir);
-  nfree(Cfg.debug);
-  nfree(Cfg.libcVersion);
-  nfree(Cfg.location);
-  nfree(Cfg.sysOpName);
-  nfree(Cfg.workDir);
-  nfree(Cfg.inbound);
-  nfree(Cfg.protInbound);
-  nfree(Cfg.localInbound);
-  nfree(Cfg.tempInbound);
-  nfree(Cfg.tempOutbound);
-  nfree(Cfg.outbound);
-  nfree(Cfg.msgbaseDir);
-  nfree(Cfg.nodelistDir);
-  nfree(Cfg.netmailDir);
-  nfree(Cfg.scriptDir);
-  nfree(Cfg.isdnDev);
-  nfree(Cfg.modemDev);
-  nfree(Cfg.modemBaud);
-  nfree(Cfg.internatPrefix);
-  nfree(Cfg.localPrefix);
-  nfree(Cfg.voiceNum);
-  nfree(Cfg.dataNum);
-  nfree(Cfg.amtNum);
-  nfree(Cfg.localNum);
-  nfree(Cfg.internatNum);
-  nfree(Cfg.packer);
-  nfree(Cfg.pointNr);
-  nfree(Cfg.uplinkAddr);
-  nfree(Cfg.uplinkName);
-  nfree(Cfg.uplinkPwd);
-  nfree(Cfg.homeDir);
+  int i;
+
+  // ignore userNameIdx
+  for (i = 0; i < numIdx - 1; i++) nfree(cfg[i]);
 }
 
 int doMain()
@@ -754,52 +722,51 @@ int doMain()
   {
     printf(pleaseExecuteAsRootText);
 
-    return 1;
+    return rcNotRoot;
   }
 
-  if (checkprograms() != 0) return 2;
-  if (checkfiles() != 0) return 3;
+  if (checkfiles() != 0) return rcCheckFiles;
 
   getconfig();
   chooseboss();
 
-  if (createusers() != 0) return 4;
-  if (createdirs() != 0) return 5;
-  if (createSystemConfigPrecompile() != 0) return 6;
+  if (createusers() != 0) return rcCreateUsers;
+  if (createdirs() != 0) return rcCreateDirs;
+  if (createSystemConfigPrecompile() != 0) return rcCreateSystemConfigPrecompile;
 
-  rc = callAsUser(Cfg.fidoName, Cfg.groupName, unpacksources);
-  if (rc != 0) return rc;
-  rc = callAsUser(Cfg.fidoName, Cfg.groupName, createmakeconfig);
-  if (rc != 0) return rc;
-  rc = callAsUser(Cfg.fidoName, Cfg.groupName, compilesmapi);
-  if (rc != 0) return rc;
+  rc = callAsUser(cfg[fidoNameIdx], cfg[groupNameIdx], unpacksources);
+  if (rc != 0) return rcUnpackSources;
+  rc = callAsUser(cfg[fidoNameIdx], cfg[groupNameIdx], createMakeConfig);
+  if (rc != 0) return rcCreateMakeConfig;
+  rc = callAsUser(cfg[fidoNameIdx], cfg[groupNameIdx], compilesmapi);
+  if (rc != 0) return rcCompileSmapi;
 
-  if (installsmapi() != 0) return 11;
+  if (installsmapi() != 0) return rcInstallSmapi;
 
-  rc = callAsUser(Cfg.fidoName, Cfg.groupName, compilefconf);
-  if (rc != 0) return rc;
+  rc = callAsUser(cfg[fidoNameIdx], cfg[groupNameIdx], compilefconf);
+  if (rc != 0) return rcCompileFconf;
 
-  if (installfconf() != 0) return 13;
+  if (installfconf() != 0) return rcInstallFconf;
 
-  rc = callAsUser(Cfg.fidoName, Cfg.groupName, compileprogs);
-  if (rc != 0) return rc;
+  rc = callAsUser(cfg[fidoNameIdx], cfg[groupNameIdx], compileprogs);
+  if (rc != 0) return rcCompileProgs;
 
-  if (installprogs() != 0) return 15;
-  if (copyScripts() != 0) return 16;
+  if (installprogs() != 0) return rcInstallProgs;
+  if (copyScripts() != 0) return rcCopyScripts;
 
   getuplinkconfig();
   createSystemConfigAfterInstall();
 
-  rc = callAsUser(Cfg.fidoName, Cfg.groupName, createconfig);
-  if (rc != 0) return rc;
-  rc = callAsUser(Cfg.fidoName, Cfg.groupName, createUserConfig);
-  if (rc != 0) return rc;
-  rc = callAsUser(Cfg.fidoName, Cfg.groupName, copyNodelists);
-  if (rc != 0) return rc;
-  rc = callAsUser(Cfg.fidoName, Cfg.groupName, compileNodelists);
-  if (rc != 0) return rc;
+  rc = callAsUser(cfg[fidoNameIdx], cfg[groupNameIdx], createGlobalConfig);
+  if (rc != 0) return rcCreateConfig;
+  rc = callAsUser(cfg[fidoNameIdx], cfg[groupNameIdx], createUserConfig);
+  if (rc != 0) return rcCreateUserConfig;
+  rc = callAsUser(cfg[fidoNameIdx], cfg[groupNameIdx], copyNodelists);
+  if (rc != 0) return rcCopyNodelists;
+  rc = callAsUser(cfg[fidoNameIdx], cfg[groupNameIdx], compileNodelists);
+  if (rc != 0) return rcCompileNodelists;
 
-  UserTmp = Cfg.users;
+  UserTmp = cfg[usersIdx];
   while (strlen(UserTmp) > 0)
   {
     char *UName;
@@ -811,13 +778,13 @@ int doMain()
     strncpy(UName, UserTmp, pos);
     UName[pos] = 0;
 
-    callAsUser(UName, Cfg.groupName, createUserConfig);
+    callAsUser(UName, cfg[groupNameIdx], createUserConfig);
     free(UName);
 
     UserTmp = UserTmp + pos + 1;
   }
 
-  printf(installDoneText, Cfg.fidoName);
+  printf(installDoneText, cfg[fidoNameIdx]);
 
   return 0;
 }
@@ -829,19 +796,25 @@ int main(int argc, char *argv[])
 
   printf("\n\n\nHuskyPoint V%s/%s\n", VERSION, OS);
   printf("Fido-Point-Packet\n");
-  printf("Setup-Script by Sascha Silbe <Sascha.Silbe@ldknet.org>\n\n");
+  printf("written by Sascha Silbe <Sascha.Silbe@ldknet.org>\n\n");
 
-  memset(&Cfg, 0, sizeof(tCfg));
+  rc = osInit();
+  if (rc != 0) return rc;
 
+  memset(&cfg, 0, numIdx * sizeof(char *));
+
+  // we are in the operating system directory => go to top directory
   oldDir = malloc(1024);
   getcwd(oldDir, 1024);
   chdir("..");
 
   rc = doMain();
 
+  // back to OS dir, free all variables
   chdir(oldDir);
   free(oldDir);
   disposeCfg();
+  osDone();
 
   return rc;
 }

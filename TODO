@@ -1,17 +1,19 @@
 near future:
-- remove OS dependencies
-- menu-based configuration with GNU readline
+- use GNU readline if available
+- check entered data
 - BinkD support
 - nltools
-- check entered data
 - CDP support
+- use less static buffers (like cwd[1024])
 - translate config remarks to english
 
 later:
-- translation to other languages (volunteers needed, I only speak german and
-  english)
 - support for other platforms (especially OS/2 and Win32)
 - outbound-viewer for HuskyUI
+- translation to other languages (volunteers needed, I only speak german and
+  english)
+- AreaFix interface
+- FLS interface
 
 I'm not angry if you send patches for bugfixes or new features. :)
 

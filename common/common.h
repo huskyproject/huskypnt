@@ -3,89 +3,94 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#define VERSION "0.1alpha3"
+#define VERSION "0.2alpha1"
 
 #define nfree(a) { if (a != NULL) { free(a); a = NULL; } }
 
-#define numZipFiles 10
-char *zipFiles[numZipFiles];
-
-#define numPrograms 2
-char *programs[numPrograms];
-
 #define numNodelists 2
-char *nodelists[numNodelists];
+extern char *nodelists[numNodelists];
 
-#define groupNameIdx                        1
-#define fidoNameIdx                         2
-#define usersIdx                            3
-#define libDirIdx                           4
-#define binDirIdx                           5
-#define manDirIdx                           6
-#define cfgDirIdx                           7
-#define logDirIdx                           8
-#define incDirIdx                           9
-#define debugIdx                           10
-#define libcVersionIdx                     11
-#define locationIdx                        12
-#define sysOpNameIdx                       13
-#define workDirIdx                         14
-#define inboundIdx                         15
-#define protInboundIdx                     16
-#define localInboundIdx                    17
-#define tempInboundIdx                     18
-#define tempOutboundIdx                    19
-#define outboundIdx                        20
-#define msgbaseDirIdx                      21
-#define nodelistDirIdx                     22
-#define netmailDirIdx                      23
-#define scriptDirIdx                       24
-#define isdnDevIdx                         25
-#define modemDevIdx                        26
-#define modemBaudIdx                       27
-#define internatPrefixIdx                  28
-#define localPrefixIdx                     29
-#define voiceNumIdx                        30
-#define dataNumIdx                         31
-#define amtNumIdx                          32
-#define localNumIdx                        33
-#define internatNumIdx                     34
-#define packerIdx                          35
-#define pointNrIdx                         36
-#define uplinkAddrIdx                      37
-#define uplinkNameIdx                      38
-#define uplinkPwdIdx                       39
-#define homeDirIdx                         40
-#define infoDirIdx                         41
-#define htmlDirIdx                         42
-#define numIdx                             42
+#define rcNotRoot                           1
+#define rcCheckNeededPrograms               2
+#define rcCheckFiles                        3
+#define rcCreateUsers                       4
+#define rcCreateDirs                        5
+#define rcCreateSystemConfigPrecompile      6
+#define rcInstallSmapi                      7
+#define rcInstallFconf                      8
+#define rcInstallProgs                      9
+#define rcCopyScripts                      10
+#define rcUnpackSources                    11
+#define rcCreateMakeConfig                 12
+#define rcCompileSmapi                     13
+#define rcCompileFconf                     14
+#define rcCompileProgs                     15
+#define rcCreateConfig                     16
+#define rcCreateUserConfig                 17
+#define rcCopyNodelists                    18
+#define rcCompileNodelists                 19
 
-typedef struct _tCfg
+#define groupNameIdx                        0
+#define fidoNameIdx                         1
+#define usersIdx                            2
+#define libDirIdx                           3
+#define binDirIdx                           4
+#define manDirIdx                           5
+#define cfgDirIdx                           6
+#define logDirIdx                           7
+#define incDirIdx                           8
+#define debugIdx                            9
+#define libcVersionIdx                     10
+#define locationIdx                        11
+#define sysOpNameIdx                       12
+#define workDirIdx                         13
+#define inboundIdx                         14
+#define protInboundIdx                     15
+#define localInboundIdx                    16
+#define tempInboundIdx                     17
+#define tempOutboundIdx                    18
+#define outboundIdx                        19
+#define msgbaseDirIdx                      20
+#define nodelistDirIdx                     21
+#define netmailDirIdx                      22
+#define scriptDirIdx                       23
+#define isdnDevIdx                         24
+#define modemDevIdx                        25
+#define modemBaudIdx                       26
+#define internatPrefixIdx                  27
+#define localPrefixIdx                     28
+#define voiceNumIdx                        29
+#define dataNumIdx                         30
+#define amtNumIdx                          31
+#define localNumIdx                        32
+#define internatNumIdx                     33
+#define packerIdx                          34
+#define pointNrIdx                         35
+#define uplinkAddrIdx                      36
+#define uplinkNameIdx                      37
+#define uplinkPwdIdx                       38
+#define homeDirIdx                         39
+#define infoDirIdx                         40
+#define htmlDirIdx                         41
+#define userNameIdx                        42
+#define numIdx                             43
+
+typedef struct _tCfgFileMap
 {
-  char *groupName, *fidoName, *users, *userName;
-  char *libDir, *binDir, *manDir, *cfgDir, *logDir, *incDir, *infoDir;
-  char *htmlDir;
-  char *debug;
-  char *libcVersion;
-  char *location, *sysOpName;
-  char *workDir, *inbound, *protInbound, *localInbound, *tempInbound;
-  char *tempOutbound, *outbound, *msgbaseDir, *nodelistDir, *netmailDir;
-  char *scriptDir;
-  char *isdnDev, *modemDev;
-  char *modemBaud;
-  char *internatPrefix, *localPrefix, *voiceNum, *dataNum, *amtNum, *localNum;
-  char *internatNum;
-  char *packer;
+  char *sourceFile;
+  char *destFile;
+  int destMode;
+} tCfgFileMap;
 
-  char *pointNr, *uplinkAddr, *uplinkName, *uplinkPwd;
-
-  int groupId;
-  int userId;
-  char *homeDir;
-} tCfg;
+typedef struct _tMenuEntry
+{
+  char key;
+  char *text;
+  int idx;
+} tMenuEntry;
 
 
-extern tCfg Cfg;
+extern char *cfg[numIdx];
 
 char *ask(char *prompt, char *defaultValue);
 

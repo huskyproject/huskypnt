@@ -13,6 +13,8 @@ DIRSEP=/
 
 
 # platform-independant part
+# please put OS-dependant things ONLY in the part ABOVE. This makes
+# maintaining MUCH easier!
 all: choose-language
 
 OBJS=common$(OBJ) os$(OBJ) setup$(OBJ) lang$(OBJ)

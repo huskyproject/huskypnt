@@ -11,21 +11,10 @@
 #include "os.h"
 
 
-tCfg Cfg;
+char *cfg[numIdx];
 
 
 // numXXX are defined in common.h
-
-char *zipFiles[numZipFiles] =
-{
-  "smapi.zip", "fidoconf.zip", "hpt.zip", "hptutil.zip", "sqpack.zip",
-  "mpost.zip", "msged.zip", "ifcico.zip", "huskycom.zip", "scripts.zip"
-};
-
-char *programs[numPrograms] =
-{
-  "unzip", "passwd"
-};
 
 char *nodelists[numNodelists] =
 {

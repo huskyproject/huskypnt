@@ -11,7 +11,23 @@
 #define osDir "linux"
 #define osTmpDir "/tmp/"
 
-extern char *defaults[numIdx+1];
+extern char *defaults[numIdx];
+
+#define numZipFiles 10
+char *zipFiles[numZipFiles];
+
+#define numPrograms 7
+char *programs[numPrograms];
+
+#define numNeededPrograms 2
+char *neededPrograms[numNeededPrograms];
+
+#define numMakeCfgFiles 2
+tCfgFileMap makeCfgFiles[numMakeCfgFiles];
+
+#define numGlobalCfgFiles 7
+tCfgFileMap globalCfgFiles[numGlobalCfgFiles];
+
 
 // returns 0 if file exists
 int fexist(char *fname);
@@ -38,13 +54,14 @@ char *readFile(char *fname);
 // successfull
 int mkdirp(char *dirname);
 
+// unpack archive into current directory
+// returns 0 if successfull
+int unpackFile(char *fname);
+
 void waitForKey();
 
 // checks if all a program is installed, returns 0 if found
 int checkprogram(char *name);
-
-// checks if all needed programs are installed, returns 0 if everything found
-int checkprograms();
 
 // returns 0 if successfull
 int createusers();
@@ -78,6 +95,18 @@ int callAsUser(char *userName, char *groupName,
 int setTemplateVars();
 
 char *getVar(char *varName);
+
+// returns 0 if successfull
+int compileNodelists(char *userName, char *groupName);
+
+// clear screen
+void clrscr();
+
+// init os-dependent variables, do os-dep. checks
+int osInit();
+
+// free os-dependent variables
+void osDone();
 
 #endif
 
