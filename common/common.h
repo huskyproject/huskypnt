@@ -29,6 +29,7 @@ extern char *nodelists[numNodelists];
 #define rcCreateUserConfig                 17
 #define rcCopyNodelists                    18
 #define rcCompileNodelists                 19
+#define rcSetVars                          20
 
 #define groupNameIdx                        0
 #define fidoNameIdx                         1
@@ -73,7 +74,8 @@ extern char *nodelists[numNodelists];
 #define infoDirIdx                         40
 #define htmlDirIdx                         41
 #define userNameIdx                        42
-#define numIdx                             43
+#define admGroupNameIdx                    43
+#define numIdx                             44
 
 typedef struct _tCfgFileMap
 {
@@ -96,6 +98,9 @@ char *ask(char *prompt, char *defaultValue);
 
 // 0 if everything's allright
 int askAllright();
+
+// returns 0 on success
+int setTemplateVars();
 
 // returns 0 if successfull
 int processTemplate(char *templName, char *outName);

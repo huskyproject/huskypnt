@@ -1,0 +1,10 @@
+
+----- cvs ci -----
+Wed Aug 30 01:28:53 UTC 2000
+sms:
+* moved user-config into subdir .fido, using normal filenames there (no 
+  leading dot)
+* adding group fidoadm
+* setting ownership and permissions for user-config
+* preliminary support for GNU readline
+

@@ -13,7 +13,7 @@
 
 extern char *defaults[numIdx];
 
-#define numZipFiles 10
+#define numZipFiles 11
 char *zipFiles[numZipFiles];
 
 #define numPrograms 7
@@ -92,7 +92,7 @@ int callAsUser(char *userName, char *groupName,
 	       int func(char *userName, char *groupName) );
 
 // returns 0 on success
-int setTemplateVars();
+int setVar(char *varName, char *content);
 
 char *getVar(char *varName);
 

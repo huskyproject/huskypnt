@@ -6,6 +6,7 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "auto.h"
 #include "common.h"
 #include "lang.h"
 #include "os.h"
@@ -53,6 +54,62 @@ int askAllright()
 
   if (c == yesKey) return 0;
   return 1;
+}
+
+// returns 0 on success
+int setTemplateVars()
+{
+  int rc;
+
+  rc = 0;
+
+  rc += setVar("amtnum", cfg[amtNumIdx]);
+  rc += setVar("bindir", cfg[binDirIdx]);
+  rc += setVar("cfgdir", cfg[cfgDirIdx]);
+  rc += setVar("datanum", cfg[dataNumIdx]);
+  rc += setVar("debug", cfg[debugIdx]);
+  rc += setVar("dirsep", dirSepS);
+  rc += setVar("fidoname", cfg[fidoNameIdx]);
+  rc += setVar("groupname", cfg[groupNameIdx]);
+  rc += setVar("homedir", cfg[homeDirIdx]);
+  rc += setVar("htmldir", cfg[htmlDirIdx]);
+  rc += setVar("inbound", cfg[inboundIdx]);
+  rc += setVar("incdir", cfg[incDirIdx]);
+  rc += setVar("infodir", cfg[infoDirIdx]);
+  rc += setVar("internatnum", cfg[internatNumIdx]);
+  rc += setVar("internatprefix", cfg[internatPrefixIdx]);
+  rc += setVar("isdndev", cfg[isdnDevIdx]);
+  rc += setVar("langdir", langDir);
+  rc += setVar("libcversion", cfg[libcVersionIdx]);
+  rc += setVar("libdir", cfg[libDirIdx]);
+  rc += setVar("localinbound", cfg[localInboundIdx]);
+  rc += setVar("localnum", cfg[localNumIdx]);
+  rc += setVar("localprefix", cfg[localPrefixIdx]);
+  rc += setVar("location", cfg[locationIdx]);
+  rc += setVar("logdir", cfg[logDirIdx]);
+  rc += setVar("mandir", cfg[manDirIdx]);
+  rc += setVar("modembaud", cfg[modemBaudIdx]);
+  rc += setVar("modemdev", cfg[modemDevIdx]);
+  rc += setVar("msgbasedir", cfg[msgbaseDirIdx]);
+  rc += setVar("netmaildir", cfg[netmailDirIdx]);
+  rc += setVar("nodelistdir", cfg[nodelistDirIdx]);
+  rc += setVar("outbound", cfg[outboundIdx]);
+  rc += setVar("packer", cfg[packerIdx]);
+  rc += setVar("pointnr", cfg[pointNrIdx]);
+  rc += setVar("protinbound", cfg[protInboundIdx]);
+  rc += setVar("scriptdir", cfg[scriptDirIdx]);
+  rc += setVar("sysopname", cfg[sysOpNameIdx]);
+  rc += setVar("tempinbound", cfg[tempInboundIdx]);
+  rc += setVar("tempoutbound", cfg[tempOutboundIdx]);
+  rc += setVar("uplinkaddr", cfg[uplinkAddrIdx]);
+  rc += setVar("uplinkname", cfg[uplinkNameIdx]);
+  rc += setVar("uplinkpwd", cfg[uplinkPwdIdx]);
+  rc += setVar("username", cfg[userNameIdx]);
+  rc += setVar("users", cfg[usersIdx]);
+  rc += setVar("voicenum", cfg[voiceNumIdx]);
+  rc += setVar("workdir", cfg[workDirIdx]);
+
+  return rc;
 }
 
 // returns 0 if successfull

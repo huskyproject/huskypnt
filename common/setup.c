@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <dirent.h>
 
+#include "auto.h"
 #include "common.h"
 #include "lang.h"
 #include "os.h"
@@ -79,7 +80,7 @@ char menuChoice(char *validChoices)
     fgets(s, 5, stdin);
     c = *s;
     if (strchr(validChoices, c) != NULL) ok = 0;
-    else printf("Invalid choice! Try again.\n");
+    else printf(menuInvalidChoice);
   }
   free(s);
 
@@ -155,15 +156,7 @@ void getconfig()
   while (ok != 0)
   {
     clrscr();
-    printf("configuration - main menu\n"
-	   "\n"
-	   " 1) system config\n"
-	   " 2) personal config\n"
-	   " 3) fido directory config\n"
-	   " 4) communications setup\n"
-	   "\n"
-	   " x) continue\n"
-	   "\n");
+    printf(configMenus);
 
     c = menuChoice("1234x");
     switch (c)
@@ -710,7 +703,8 @@ void disposeCfg()
   int i;
 
   // ignore userNameIdx
-  for (i = 0; i < numIdx - 1; i++) nfree(cfg[i]);
+  for (i = 0; i < numIdx; i++)
+    if (i != userNameIdx) nfree(cfg[i]);
 }
 
 int doMain()

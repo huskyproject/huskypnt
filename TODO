@@ -1,5 +1,10 @@
-near future:
+currently:
 - use GNU readline if available
+- adapt configs to latest fidoconf etc. versions
+
+near future:
+- scroll texts in showFile
+- save config between sessions (useful if compiling fails)
 - check entered data
 - BinkD support
 - nltools
@@ -14,6 +19,7 @@ later:
   english)
 - AreaFix interface
 - FLS interface
+- Uninstall
 
 I'm not angry if you send patches for bugfixes or new features. :)
 

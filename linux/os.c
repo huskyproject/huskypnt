@@ -11,6 +11,7 @@
 #include <grp.h>
 #include <pwd.h>
 
+#include "auto.h"
 #include "common.h"
 #include "os.h"
 #include "lang.h"
@@ -20,12 +21,13 @@
 char *zipFiles[numZipFiles] =
 {
   "smapi.zip", "fidoconf.zip", "hpt.zip", "hptutil.zip", "sqpack.zip",
-  "mpost.zip", "msged.zip", "ifcico.zip", "huskycom.zip", "scripts.zip"
+  "mpost.zip", "msged.zip", "ifcico.zip", "huskybse.zip", "huskmisc.zip",
+  "scripts.zip"
 };
 
 char *programs[numPrograms] =
 {
-  "hpt", "hptutil", "sqpack", "mpost", "msged", "ifcico", "husky-common"
+  "hpt", "hptutil", "sqpack", "mpost", "msged", "ifcico", "huskmisc"
 };
 
 tCfgFileMap makeCfgFiles[numMakeCfgFiles] =
@@ -92,9 +94,10 @@ char *defaults[numIdx] =
   "",
   "",
   "",
+  "/usr/local/info",
   "",
   "",
-  ""
+  "fidoadm"
 };
 
 // returns 0 if file exists
@@ -241,7 +244,7 @@ void waitForKey()
   } while (c == EOF);
 }
 
-// checks if all a program is installed, returns 0 if found
+// checks if a program is installed, returns 0 if found
 int checkNeededProgram(char *name)
 {
   int rc;
@@ -443,12 +446,13 @@ int createuser(char *username, int groupid)
 // returns 0 if successfull
 int createusers()
 {
-  int groupId;
+  int fidoGroupId, admGroupId;
 
   printf(creatingUserAndGroupText);
 
-  groupId = creategroup(cfg[groupNameIdx], cfg[usersIdx]);
-  if (createuser(cfg[fidoNameIdx], groupId) == -1) return 1;
+  fidoGroupId = creategroup(cfg[groupNameIdx], cfg[usersIdx]);
+  if (createuser(cfg[fidoNameIdx], fidoGroupId) == -1) return 1;
+  admGroupId = creategroup(cfg[admGroupNameIdx], cfg[fidoNameIdx]);
 
   return 0;
 }
@@ -484,14 +488,15 @@ int createUserConfig(char *userName, char *groupName)
   char fname[1024], fname2[1024];
   char *oldSysOpName, *oldUserName;
   struct passwd *pw;
+  struct group *gr;
 
   printf(creatingUserCfgText, userName);
 
-  umask(0022);
   oldSysOpName = cfg[sysOpNameIdx];
   oldUserName = cfg[userNameIdx];
 
   pw = getpwnam(userName);
+  gr = getgrgid(pw->pw_gid);
 
   if (strcmp(userName, cfg[fidoNameIdx]) != 0)
   {
@@ -500,17 +505,28 @@ int createUserConfig(char *userName, char *groupName)
       *strchr(cfg[sysOpNameIdx], ',') = 0;
   }
 
-  sprintf(fname, "%s/.msged", pw->pw_dir);
+  sprintf(fname, "%s/.fido", pw->pw_dir);
+  mkdirp(fname);
+  setOwner(fname, userName, cfg[admGroupNameIdx]);
+  setMode(fname, 488); // Octal 750
+
+  sprintf(fname, "%s/.fido/msged.cfg", pw->pw_dir);
   sprintf(fname2, "%s/msged.cfg", langDir);
   if (processTemplate(fname2, fname) != 0) return 1;
+  setOwner(fname, userName, gr->gr_name);
+  setMode(fname, 384); // Octal 600
 
-  sprintf(fname, "%s/.msged.scheme", pw->pw_dir);
+  sprintf(fname, "%s/.fido/msged.scheme.cfg", pw->pw_dir);
   sprintf(fname2, "%s/msged.scheme.cfg", langDir);
   if (processTemplate(fname2, fname) != 0) return 1;
+  setOwner(fname, userName, gr->gr_name);
+  setMode(fname, 384); // Octal 600
 
-  sprintf(fname, "%s/.msged.tpl", pw->pw_dir);
+  sprintf(fname, "%s/.fido/msged.tpl", pw->pw_dir);
   sprintf(fname2, "%s/msged.tpl", langDir);
   if (processTemplate(fname2, fname) != 0) return 1;
+  setOwner(fname, userName, gr->gr_name);
+  setMode(fname, 384); // Octal 600
 
   if (strcmp(userName, cfg[fidoNameIdx]) != 0) free(cfg[sysOpNameIdx]);
   cfg[sysOpNameIdx] = oldSysOpName;
@@ -678,61 +694,9 @@ int callAsUser(char *userName, char *groupName,
 }
 
 // returns 0 on success
-int setTemplateVars()
+int setVar(char *varName, char *content)
 {
-  int rc;
-
-  rc = 0;
-  rc += setenv("linux", "1", 1);
-  rc += setenv("os", OS, 1);
-
-  rc += setenv("amtnum", cfg[amtNumIdx], 1);
-  rc += setenv("bindir", cfg[binDirIdx], 1);
-  rc += setenv("cfgdir", cfg[cfgDirIdx], 1);
-  rc += setenv("datanum", cfg[dataNumIdx], 1);
-  rc += setenv("debug", cfg[debugIdx], 1);
-  rc += setenv("dirsep", dirSepS, 1);
-  rc += setenv("fidoname", cfg[fidoNameIdx], 1);
-  rc += setenv("groupname", cfg[groupNameIdx], 1);
-  rc += setenv("homedir", cfg[homeDirIdx], 1);
-  rc += setenv("htmldir", cfg[htmlDirIdx], 1);
-  rc += setenv("inbound", cfg[inboundIdx], 1);
-  rc += setenv("incdir", cfg[incDirIdx], 1);
-  rc += setenv("infodir", cfg[infoDirIdx], 1);
-  rc += setenv("internatnum", cfg[internatNumIdx], 1);
-  rc += setenv("internatprefix", cfg[internatPrefixIdx], 1);
-  rc += setenv("isdndev", cfg[isdnDevIdx], 1);
-  rc += setenv("langdir", langDir, 1);
-  rc += setenv("libcversion", cfg[libcVersionIdx], 1);
-  rc += setenv("libdir", cfg[libDirIdx], 1);
-  rc += setenv("localinbound", cfg[localInboundIdx], 1);
-  rc += setenv("localnum", cfg[localNumIdx], 1);
-  rc += setenv("localprefix", cfg[localPrefixIdx], 1);
-  rc += setenv("location", cfg[locationIdx], 1);
-  rc += setenv("logdir", cfg[logDirIdx], 1);
-  rc += setenv("mandir", cfg[manDirIdx], 1);
-  rc += setenv("modembaud", cfg[modemBaudIdx], 1);
-  rc += setenv("modemdev", cfg[modemDevIdx], 1);
-  rc += setenv("msgbasedir", cfg[msgbaseDirIdx], 1);
-  rc += setenv("netmaildir", cfg[netmailDirIdx], 1);
-  rc += setenv("nodelistdir", cfg[nodelistDirIdx], 1);
-  rc += setenv("outbound", cfg[outboundIdx], 1);
-  rc += setenv("packer", cfg[packerIdx], 1);
-  rc += setenv("pointnr", cfg[pointNrIdx], 1);
-  rc += setenv("protinbound", cfg[protInboundIdx], 1);
-  rc += setenv("scriptdir", cfg[scriptDirIdx], 1);
-  rc += setenv("sysopname", cfg[sysOpNameIdx], 1);
-  rc += setenv("tempinbound", cfg[tempInboundIdx], 1);
-  rc += setenv("tempoutbound", cfg[tempOutboundIdx], 1);
-  rc += setenv("uplinkaddr", cfg[uplinkAddrIdx], 1);
-  rc += setenv("uplinkname", cfg[uplinkNameIdx], 1);
-  rc += setenv("uplinkpwd", cfg[uplinkPwdIdx], 1);
-  rc += setenv("username", cfg[userNameIdx], 1);
-  rc += setenv("users", cfg[usersIdx], 1);
-  rc += setenv("voicenum", cfg[voiceNumIdx], 1);
-  rc += setenv("workdir", cfg[workDirIdx], 1);
-
-  return rc;
+  return setenv(varName, content, 1);
 }
 
 char *getVar(char *varName)
@@ -764,6 +728,7 @@ int compileNodelists(char *userName, char *groupName)
 
 void clrscr()
 {
+  // ANSI sequence - should work on every terminal
   printf("\033[H\033[J");
 }
 
@@ -777,7 +742,10 @@ int osInit()
   rc = checkNeededPrograms();
   if (rc != 0) return rcCheckNeededPrograms;
 
-  return 0;
+  rc = setVar("linux", "1");
+  rc += setVar("os", OS);
+
+  return rc;
 }
 
 // free os-dependent variables

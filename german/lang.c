@@ -1,38 +1,53 @@
 /* german.c - german menus/texts */
 
+#include "auto.h"
 #include "common.h"
 #include "os.h"
 #include "lang.h"
 
 char *langDir = "german";
 
-char *systemConfigTitle = "configuration - system config\n\n";
+char *configMenus =
+  "Konfiguration - Hauptmenue\n"
+  "\n"
+  " 1) System-Einstellungen\n"
+  " 2) Persoenliche Einstellungen\n"
+  " 3) Fido-Verzeichnisse\n"
+  " 4) Kommunikations-Einstellungen\n"
+  "\n"
+  " x) Fertig\n"
+  "\n";
+
+char *menuInvalidChoice = "Ungueltige Eingabe! Bitte nochmal versuchen.\n";
+
+char *systemConfigTitle = "Konfiguration - System-Einstellungen\n\n";
 tMenuEntry systemConfigEntries[numSystemConfigEntries] =
 {
   { '1', " 1) Fido-Gruppe: %s\n", groupNameIdx },
   { '2', " 2) Fido-Admin-Benutzer: %s\n", fidoNameIdx },
-  { '3', " 3) Erlaubte Benutzer: %s\n", usersIdx },
-  { '4', " 4) libc-Version: %s\n", libcVersionIdx },
-  { '5', " 5) Debug-Versionen erstellen: %s\n", debugIdx },
-  { '6', " 6) Bibliotheks-Verzeichnis: %s\n", libDirIdx },
-  { '7', " 7) Programm-Verzeichnis: %s\n", binDirIdx },
-  { '8', " 8) Hilfeseiten-Verzeichnis: %s\n", manDirIdx },
-  { '9', " 9) Config-Verzeichnis: %s\n", cfgDirIdx },
-  { 'a', " a) Verzeichnis fuer Logdateien: %s\n", logDirIdx },
-  { 'b', " b) Include-Verzeichnis: %s\n", incDirIdx },
-  { 'c', " c) Verzeichnis mit Dokus im Info-Format: %s\n", infoDirIdx },
-  { 'd', " d) Verzeichnis mit Dokus im HTML-Format: %s\n", htmlDirIdx },
-  { 'e', " e) Script-Verzeichnis: %s\n", scriptDirIdx },
+  { '3', " 3) Fido-Admin-Gruppe: %s\n", admGroupNameIdx },
+  { '4', " 4) Erlaubte Benutzer: %s\n", usersIdx },
+  { '5', " 5) libc-Version: %s\n", libcVersionIdx },
+  { '6', " 6) Debug-Versionen erstellen: %s\n", debugIdx },
+  { '7', " 7) Bibliotheks-Verzeichnis: %s\n", libDirIdx },
+  { '8', " 8) Programm-Verzeichnis: %s\n", binDirIdx },
+  { '9', " 9) Hilfeseiten-Verzeichnis: %s\n", manDirIdx },
+  { 'a', " a) Config-Verzeichnis: %s\n", cfgDirIdx },
+  { 'b', " b) Verzeichnis fuer Logdateien: %s\n", logDirIdx },
+  { 'c', " c) Include-Verzeichnis: %s\n", incDirIdx },
+  { 'd', " d) Verzeichnis mit Dokus im Info-Format: %s\n", infoDirIdx },
+  { 'e', " e) Verzeichnis mit Dokus im HTML-Format: %s\n", htmlDirIdx },
+  { 'f', " f) Script-Verzeichnis: %s\n", scriptDirIdx },
 };
 
-char *personalConfigTitle = "configuration - personal config\n\n";
+char *personalConfigTitle = "Konfiguration - Persoenliche Einstellungen\n\n";
 tMenuEntry personalConfigEntries[numPersonalConfigEntries] =
 {
   { '1', " 1) Standort: %s\n", locationIdx },
   { '2', " 2) Systembetreiber (also Dein Name :) ): %s\n", sysOpNameIdx }
 };
 
-char *fidoDirConfigTitle = "configuration - fido directory config\n\n";
+char *fidoDirConfigTitle = "Konfiguration - Fido-Verzeichnisse\n\n";
 tMenuEntry fidoDirConfigEntries[numFidoDirConfigEntries] =
 {
   { '1', " 1) Arbeitsverzeichnis: %s\n", workDirIdx },
@@ -47,21 +62,22 @@ tMenuEntry fidoDirConfigEntries[numFidoDirConfigEntries] =
   { 'a', " a) Netmail-Verzeichnis: %s\n", netmailDirIdx }
 };
 
-char *commConfigTitle = "configuration - communications setup\n\n";
+char *commConfigTitle = "Konfiguration - Kommunikationseinstellungen\n\n";
 tMenuEntry commConfigEntries[numCommConfigEntries] =
 {
   { '1', " 1) isdn device: %s\n", isdnDevIdx },
   { '2', " 2) modem device: %s\n", modemDevIdx },
-  { '3', " 3) internationale Vorwahl: %s\n", internatPrefixIdx },
-  { '4', " 4) Orts-Vorwahl: %s\n", localPrefixIdx },
-  { '5', " 5) Telefonnummer (Sprache): %s\n", voiceNumIdx },
-  { '6', " 6) Telefonnummer (Daten): %s\n", dataNumIdx },
-  { '7', " 7) Amts-Ziffer: %s\n", amtNumIdx },
-  { '8', " 8) Orts-Ziffer: %s\n", localNumIdx },
-  { '9', " 9) Auslands-Ziffer: %s\n", internatNumIdx }
+  { '3', " 3) computer<->modem baudrate: %s\n", modemBaudIdx },
+  { '4', " 4) internationale Vorwahl: %s\n", internatPrefixIdx },
+  { '5', " 5) Orts-Vorwahl: %s\n", localPrefixIdx },
+  { '6', " 6) Telefonnummer (Sprache): %s\n", voiceNumIdx },
+  { '7', " 7) Telefonnummer (Daten): %s\n", dataNumIdx },
+  { '8', " 8) Amts-Ziffer: %s\n", amtNumIdx },
+  { '9', " 9) Orts-Ziffer: %s\n", localNumIdx },
+  { 'a', " a) Auslands-Ziffer: %s\n", internatNumIdx }
 };
 
-char *uplinkConfigTitle = "uplink configuration\n\n";
+char *uplinkConfigTitle = "Uplink-Konfiguration\n\n";
 tMenuEntry uplinkConfigEntries[numUplinkConfigEntries] =
 {
   { '1', " 1) Point-Nr.: %s\n", pointNrIdx },
@@ -115,7 +131,7 @@ char *descTexts[numIdx] =
   "Hier landen ankommende Dateien von passwort-geschuetzten Verbindungen,\n"
   "z.B. Mails vom Uplink.\n\n",
 
-  "Hier kann man PKTs reinwerfen, die nicht auf Passwort etc.\n
+  "Hier kann man PKTs reinwerfen, die nicht auf Passwort etc.\n"
   "ueberprueft werden, z.B. um eine Mail automatisch zu posten.\n\n",
 
   "Hierhin werden die PKTs entpackt, um sie dann zu tossen.\n\n",
@@ -166,7 +182,7 @@ char *descTexts[numIdx] =
   "Internationale Vorwahl\n"
   "Deutschland: 49\n\n",
 
-  "Ortsvorwahl (z.B. 641 fuer Giessen)\n\n",
+  "Ortsvorwahl (z.B. 641 (nicht 0641!) fuer Giessen)\n\n",
 
   "Eigene (Sprach-)Telefonnumer ohne Vorwahl (z.B. 3012958)\n\n",
 
@@ -201,10 +217,15 @@ char *descTexts[numIdx] =
   "Zumindest theoretisch. Dein Uplink z.B. kann diesen Schutz umgehen,\n"
   "aber der hat Dein Passwort sowieso. :)\n\n",
 
+  "In diesem Verzeichnis wird die Doku im HTML-Format abgelegt.\n\n",
+
   "In diesem Verzeichnis wird die Doku im Info-Format abgelegt.\n\n",
 
-  "In diesem Verzeichnis wird die Doku im HTML-Format abgelegt.\n\n",
-  ""
+  "",
+
+  "Tosser etc. sind in dieser Gruppe und haben damit quasi Admin-Rechte\n"
+  "fuer die Fido-Software, sie koennen unter anderem auf die Netmail-Areas\n"
+  "(also die privaten Mails) der User zugreifen\n",
 };
 
 char *chooseBossText =
@@ -212,9 +233,9 @@ char *chooseBossText =
   "genannt) aussuchen. Von diesem System bekommst Du dann Deine Mails.\n"
   "Ich empfehle, einen der unten aufgelisteten Nodes zu waehlen, denn die\n"
   "koennen Dir bei Problemen (mit Deiner Fido-Software :) ) gut helfen.\n"
-  "Hauptkriterium waren bisher die Telefonkosten. Inzwischen koennte es evtl.\n"
-  "billiger sein, einen Node in Ferntarif zu waehlen und dann einen\n"
-  "Call-by-Call-Anbieter mit sekundengenauer Abrechnung zu nutzen.\n\n"
+  "Hauptkriterium waren bisher die Telefonkosten und somit die Entfernung.\n"
+  "Inzwischen ist es billiger, einen Node in Ferntarif zu waehlen und dann\n"
+  "einen Call-by-Call-Anbieter mit sekundengenauer Abrechnung zu nutzen.\n\n"
   "Folgende deutschsprachigen Nodes nehmen Points auf:\n"
   "\n%s\n"
   "Waehle Dir einen Uplink aus und besprich mit ihm die\n"

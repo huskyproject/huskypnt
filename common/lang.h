@@ -4,8 +4,9 @@
 #define __LANG_H__
 
 extern char *langDir;
+extern char *configMenus;
 
-#define numSystemConfigEntries 14
+#define numSystemConfigEntries 15
 extern char *systemConfigTitle;
 extern tMenuEntry systemConfigEntries[numSystemConfigEntries];
 
@@ -17,13 +18,15 @@ extern tMenuEntry personalConfigEntries[numPersonalConfigEntries];
 extern char *fidoDirConfigTitle;
 extern tMenuEntry fidoDirConfigEntries[numFidoDirConfigEntries];
 
-#define numCommConfigEntries 9
+#define numCommConfigEntries 10
 extern char *commConfigTitle;
 extern tMenuEntry commConfigEntries[numCommConfigEntries];
 
 #define numUplinkConfigEntries 5
 extern char *uplinkConfigTitle;
 extern tMenuEntry uplinkConfigEntries[numUplinkConfigEntries];
+
+extern char *menuInvalidChoice;
 
 extern char *descTexts[numIdx];
 

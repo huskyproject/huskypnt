@@ -1,28 +1,43 @@
 /* english.c - english questions/texts */
 
+#include "auto.h"
 #include "common.h"
 #include "os.h"
 #include "lang.h"
 
 char *langDir = "english";
 
+char *configMenus =
+  "configuration - main menu\n"
+  "\n"
+  " 1) system config\n"
+  " 2) personal config\n"
+  " 3) fido directory config\n"
+  " 4) communications setup\n"
+  "\n"
+  " x) continue\n"
+  "\n";
+
+char *menuInvalidChoice = "Invalid choice! Try again.\n";
+
 char *systemConfigTitle = "configuration - system config\n\n";
 tMenuEntry systemConfigEntries[numSystemConfigEntries] =
 {
   { '1', " 1) fido group: %s\n", groupNameIdx },
   { '2', " 2) fido-admin user: %s\n", fidoNameIdx },
-  { '3', " 3) allowed users: %s\n", usersIdx },
-  { '4', " 4) libc version: %s\n", libcVersionIdx },
-  { '5', " 5) generate debug versions: %s\n", debugIdx },
-  { '6', " 6) library directory: %s\n", libDirIdx },
-  { '7', " 7) binary directory: %s\n", binDirIdx },
-  { '8', " 8) man-page directory: %s\n", manDirIdx },
-  { '9', " 9) config directory: %s\n", cfgDirIdx },
-  { 'a', " a) logfile directory: %s\n", logDirIdx },
-  { 'b', " b) include directory: %s\n", incDirIdx },
-  { 'c', " c) info directory: %s\n", infoDirIdx },
-  { 'd', " d) html directory: %s\n", htmlDirIdx },
-  { 'e', " e) script directory: %s\n\n", scriptDirIdx },
+  { '3', " 3) fido-admin group: %s\n", admGroupNameIdx },
+  { '4', " 4) allowed users: %s\n", usersIdx },
+  { '5', " 5) libc version: %s\n", libcVersionIdx },
+  { '6', " 6) generate debug versions: %s\n", debugIdx },
+  { '7', " 7) library directory: %s\n", libDirIdx },
+  { '8', " 8) binary directory: %s\n", binDirIdx },
+  { '9', " 9) man-page directory: %s\n", manDirIdx },
+  { 'a', " a) config directory: %s\n", cfgDirIdx },
+  { 'b', " b) logfile directory: %s\n", logDirIdx },
+  { 'c', " c) include directory: %s\n", incDirIdx },
+  { 'd', " d) info directory: %s\n", infoDirIdx },
+  { 'e', " e) html directory: %s\n", htmlDirIdx },
+  { 'f', " f) script directory: %s\n\n", scriptDirIdx },
 };
 
 char *personalConfigTitle = "configuration - personal config\n\n";
@@ -52,13 +67,14 @@ tMenuEntry commConfigEntries[numCommConfigEntries] =
 {
   { '1', " 1) isdn device: %s\n", isdnDevIdx },
   { '2', " 2) modem device: %s\n", modemDevIdx },
-  { '3', " 3) international prefix: %s\n", internatPrefixIdx },
-  { '4', " 4) local prefix: %s\n", localPrefixIdx },
-  { '5', " 5) voice number: %s\n", voiceNumIdx },
-  { '6', " 6) data number: %s\n", dataNumIdx },
-  { '7', " 7) dialout number: %s\n", amtNumIdx },
-  { '8', " 8) local number: %s\n", localNumIdx },
-  { '9', " 9) international number: %s\n", internatNumIdx }
+  { '3', " 3) computer<->modem baudrate: %s\n", modemBaudIdx },
+  { '4', " 4) international prefix: %s\n", internatPrefixIdx },
+  { '5', " 5) local prefix: %s\n", localPrefixIdx },
+  { '6', " 6) voice number: %s\n", voiceNumIdx },
+  { '7', " 7) data number: %s\n", dataNumIdx },
+  { '8', " 8) dialout number: %s\n", amtNumIdx },
+  { '9', " 9) local number: %s\n", localNumIdx },
+  { 'a', " a) international number: %s\n", internatNumIdx }
 };
 
 char *uplinkConfigTitle = "uplink configuration\n\n";
@@ -120,7 +136,7 @@ char *descTexts[numIdx] =
   "rule :) ).\n"
   "Baudrate for Modem-Port? \n\n",
   "International part of phonenumber (e.g. 49 for germany)? \n\n",
-  "Local part of phonenumber (e.g. 641 for Giessen)? \n\n",
+  "Local part of phonenumber (e.g. 641 (not 0641!) for Giessen)? \n\n",
   "Last part of (Voice-)phonenumber (e.g. 3012958)? \n\n",
   "Last part of (Data-)phonenumber (e.g. 3012959)? \n\n",
   "Dialout prefix if needed (e.g. 0W)? \n\n",
@@ -134,7 +150,8 @@ char *descTexts[numIdx] =
   "Home directory of the new user? \n\n",
   "Put the documentation on info-format into: \n\n",
   "Put the documentation on html-format into: \n\n",
-  ""
+  "",
+  "Use which group for accessing user files? \n\n",
 };
 
 char *chooseBossText =
