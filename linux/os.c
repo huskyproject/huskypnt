@@ -22,12 +22,13 @@ char *zipFiles[numZipFiles] =
 {
   "smapi.zip", "fidoconf.zip", "hpt.zip", "hptutil.zip", "sqpack.zip",
   "mpost.zip", "msged.zip", "ifcico.zip", "huskybse.zip", "huskmisc.zip",
-  "scripts.zip"
+  "nltools.zip", "scripts.zip"
 };
 
 char *programs[numPrograms] =
 {
-  "hpt", "hptutil", "sqpack", "mpost", "msged", "ifcico", "huskmisc"
+  "hpt", "hptutil", "sqpack", "mpost", "msged", "ifcico", "huskmisc",
+  "nltools"
 };
 
 tCfgFileMap makeCfgFiles[numMakeCfgFiles] =
@@ -717,9 +718,26 @@ int compileNodelists(char *userName, char *groupName)
 
   printf(compilingNodelistsText);
 
+  printf("nlupdate...\n");
+  cmdline = malloc(strlen(cfg[binDirIdx])+10);
+  sprintf(cmdline, "%s" dirSepS "nlupdate", cfg[binDirIdx]);
+  rc = system(cmdline);
+  free(cmdline);
+  printf("nlupdate finished\n");
+
+  printf("ifindex...\n");
   cmdline = malloc(strlen(cfg[binDirIdx])+9);
   sprintf(cmdline, "%s" dirSepS "ifindex", cfg[binDirIdx]);
   rc = system(cmdline);
+  free(cmdline);
+  printf("ifindex finished\n");
+
+  printf("ulc...\n");
+  cmdline = malloc(strlen(cfg[binDirIdx])+5);
+  sprintf(cmdline, "%s" dirSepS "ulc", cfg[binDirIdx]);
+  rc = system(cmdline);
+  free(cmdline);
+  printf("ulc finished\n");
 
   if (rc == 0) printf(compiledNodelistsText);
 

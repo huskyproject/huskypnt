@@ -1,14 +1,13 @@
 currently:
-- adapt configs to latest fidoconf etc. versions
+- save config between sessions (useful if compiling fails)
 
 near future:
-- save config between sessions (useful if compiling fails)
 - use nmcopy
 - multi-user support
-- use nltools
 - scroll texts in showFile
 - check entered data
 - BinkD support
+- put maint etc. into crontab
 - update english part
 - CDP support
 - use new version of carc (yet to be written)

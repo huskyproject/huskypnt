@@ -1,4 +1,9 @@
 ----- cvs ci -----
+Wed Aug 30 19:51:09 UTC 2000
+* updated configs
+* nltools support
+
+----- cvs ci -----
 Wed Aug 30 18:20:17 UTC 2000
 sms:
 * finished support for GNU readline

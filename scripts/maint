@@ -2,9 +2,9 @@
 
 function main()
 {
+  nlupdate
+  ulc
   sqpack
-
-  toss
 
   if [ -f $WORKDIR$/echotoss.log ] ; then rm $WORKDIR$/echotoss.log ; fi
   hpt scan
@@ -13,7 +13,6 @@ function main()
   hptutil link
 
   purgeDupes
-
   toss
 }
 

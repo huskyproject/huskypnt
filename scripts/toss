@@ -7,7 +7,8 @@ function main()
 
 
   # check for Node/PointDiffs
-  # nlupdate
+  nlupdate
+  ulc
 
   # toss
   hpt toss
@@ -15,7 +16,7 @@ function main()
   # check for bad pkts, archives, etc.
 
   # create echotoss.log
-  echo >> $WORKDIR$/echotoss.log
+  touch $WORKDIR$/echotoss.log
 
   # scan for mails to send
   hpt scan
@@ -28,7 +29,6 @@ function main()
 
   # link areas with new mails
   hptutil link
-
 }
 
 main >> $logdir$/husky.log 2>&1

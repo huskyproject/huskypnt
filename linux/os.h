@@ -13,10 +13,10 @@
 
 extern char *defaults[numIdx];
 
-#define numZipFiles 11
+#define numZipFiles 12
 char *zipFiles[numZipFiles];
 
-#define numPrograms 7
+#define numPrograms 8
 char *programs[numPrograms];
 
 #define numNeededPrograms 2
