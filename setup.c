@@ -1,6 +1,6 @@
 /* setup-script for HuskyPoint/Lnx
    author: Sascha Silbe
-   last change: 18.3.00
+   last change: 12.04.00
 */
 
 #include <sys/stat.h>
@@ -18,7 +18,7 @@
 
 // extern FILE *stdin;
 
-#define VERSION "1.1"
+#define VERSION "1.2"
 
 #define numZipFiles 9
 char *zipFiles[numZipFiles] =
