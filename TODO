@@ -1,5 +1,7 @@
 near future:
+- remove OS dependencies
 - menu-based configuration with GNU readline
+- translate config remarks to english
 - nltools
 - conditionals in templates (e.g. for ifcico + ISDN vs. modem)
 - check entered data

@@ -10,7 +10,7 @@ function main()
   hpt pack
 
   cp $WORKDIR$/echotoss.log.2 $WORKDIR$/echotoss.log
-  hptlink
+  hptutil link
 
   if [ -f $WORKDIR$/echotoss.log ] ; then rm $WORKDIR$/echotoss.log ; fi
   if [ -f $WORKDIR$/echotoss.log.2 ] ; then rm $WORKDIR$/echotoss.log.2 ; fi

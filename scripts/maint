@@ -10,7 +10,7 @@ function main()
   hpt scan
 
   if [ -f $WORKDIR$/import.log ] ; then rm $WORKDIR$/import.log ; fi
-  hptlink
+  hptutil link
 
   purgeDupes
 
