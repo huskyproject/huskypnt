@@ -33,7 +33,8 @@ char *readline(char *prompt)
   }
 
   if (*inputBuf) res = strdup(inputBuf);
-  else res = strdup(_rlLastLine ? _rlLastLine : "");
+//  else res = strdup(_rlLastLine ? _rlLastLine : "");
+  else res = strdup("");
 
   free(inputBuf);
 

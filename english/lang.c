@@ -216,7 +216,7 @@ char *compilingNodelistsText = "Compiling nodelists.\n";
 char *compiledNodelistsText = "Compiled nodelists.\n";
 char *installDoneText = "Finished installation.\n"
   "Please log in as %s now and just try \"huskyui\". :)\n"
-  "Have fun!\n";
+  "Have fun!\n\n\n";
 char *chdirErrorText = "Could not change to directory '%s'!\n";
 
 char yesKey = 'y';

@@ -1,5 +1,4 @@
 currently:
-- use GNU readline if available
 - adapt configs to latest fidoconf etc. versions
 
 near future:
@@ -9,6 +8,7 @@ near future:
 - BinkD support
 - nltools
 - CDP support
+- write intro screen on how to use HuskyPnt (GNU readline etc.)
 - use less static buffers (like cwd[1024])
 - translate config remarks to english
 

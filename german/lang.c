@@ -213,9 +213,9 @@ char *descTexts[numIdx] =
   "ist. Dein Uplink laesst Dich auch nur dann Mails verschicken und\n"
   "abholen, wenn das Passwort vom Mailer praesentiert wird.\n"
   "Dadurch kann kein Fremder einfach Deine Mails lesen oder unter Deinem\n"
-  "Namen Mails schreiben, solange Du das Passwort nicht weitergibts.\n"
-  "Zumindest theoretisch. Dein Uplink z.B. kann diesen Schutz umgehen,\n"
-  "aber der hat Dein Passwort sowieso. :)\n\n",
+  "Namen Mails schreiben, solange Du das Passwort nicht weitergibst.\n"
+  "Dein Uplink kann diesen Schutz umgehen, aber der hat Dein Passwort\n"
+  "sowieso. :)\n\n",
 
   "In diesem Verzeichnis wird die Doku im HTML-Format abgelegt.\n\n",
 
@@ -287,7 +287,7 @@ char *copiedScriptsText = "Scripts kopiert.\n";
 char *compilingNodelistsText = "Compiliere Nodelisten.\n";
 char *compiledNodelistsText = "Nodelisten compiliert.\n";
 char *installDoneText = "Installation abgeschlossen.\n"
-  "Log Dich jetzt bitte als %s ein und ruf einfach mal \"huskyui\" auf. :)\n";
+  "Log Dich jetzt bitte als %s ein und ruf einfach mal \"huskyui\" auf. :)\n\n\n";
 char *chdirErrorText = "Konnte nicht zu Verzeichnis '%s' wechseln!\n";
 
 char yesKey = 'j';

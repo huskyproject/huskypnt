@@ -10,6 +10,7 @@
 #include "common.h"
 #include "lang.h"
 #include "os.h"
+#include "rlsubst.h"
 
 
 char *cfg[numIdx];
@@ -24,17 +25,24 @@ char *nodelists[numNodelists] =
 
 char *ask(char *prompt, char *defaultValue)
 {
-  char inputBuf[1024];
+  char *res;
+//  char inputBuf[1024];
 
-  printf(prompt, defaultValue);
-  fgets(inputBuf, 1024, stdin);
+//  printf(prompt, defaultValue);
+//  fgets(inputBuf, 1024, stdin);
 
-  while ((strlen(inputBuf) > 0) && (inputBuf[strlen(inputBuf) - 1] == '\n'))
-    inputBuf[strlen(inputBuf) - 1] = 0;
+//  while ((strlen(inputBuf) > 0) && (inputBuf[strlen(inputBuf) - 1] == '\n'))
+//    inputBuf[strlen(inputBuf) - 1] = 0;
 
-  if (strlen(inputBuf) == 0) return strdup(defaultValue);
+//  if (strlen(inputBuf) == 0) return strdup(defaultValue);
 
-  return strdup(inputBuf);
+//  return strdup(inputBuf);
+
+  add_history(defaultValue);
+  res = readline(prompt);
+  add_history(res);
+
+  return res;
 }
 
 // 0 if everything's allright

@@ -89,24 +89,25 @@ char menuChoice(char *validChoices)
 
 void editVar(int idx)
 {
-  char *newVal;
+  char *oldVal;
 
   clrscr();
   printf(descTexts[idx]);
-  printf("old value: %s\n"
-	 "new value: ", cfg[idx]);
-  newVal = malloc(1024);
-  *newVal = 0;
-  fgets(newVal, 1024, stdin);
+//  printf("old value: %s\n"
+//	 "new value: ", cfg[idx]);
+//  newVal = malloc(1024);
+//  *newVal = 0;
+//  fgets(newVal, 1024, stdin);
 
   // strip CR/LF
-  while ((*newVal != 0) && ((newVal[strlen(newVal) - 1] == 13) ||
-			    (newVal[strlen(newVal) - 1] == 10)))
-    newVal[strlen(newVal) - 1] = 0;
+//  while ((*newVal != 0) && ((newVal[strlen(newVal) - 1] == 13) ||
+//			    (newVal[strlen(newVal) - 1] == 10)))
+//    newVal[strlen(newVal) - 1] = 0;
 
-  free(cfg[idx]);
-  cfg[idx] = strdup(newVal);
-  free(newVal);
+  oldVal = cfg[idx];
+  cfg[idx] = ask("=> ", cfg[idx]);
+  free(oldVal);
+//  free(newVal);
 }
 
 void useMenu(char *title, int numEntries, tMenuEntry *entries)
@@ -779,6 +780,7 @@ int doMain()
   }
 
   printf(installDoneText, cfg[fidoNameIdx]);
+  waitForKey();
 
   return 0;
 }
