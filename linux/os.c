@@ -517,8 +517,8 @@ int createUserConfig(char *userName, char *groupName)
   setOwner(fname, userName, gr->gr_name);
   setMode(fname, 384); // Octal 600
 
-  sprintf(fname, "%s/.fido/msged.scheme.cfg", pw->pw_dir);
-  sprintf(fname2, "%s/msged.scheme.cfg", langDir);
+  sprintf(fname, "%s/.fido/msged.colors.cfg", pw->pw_dir);
+  sprintf(fname2, "%s/msged.colors.cfg", langDir);
   if (processTemplate(fname2, fname) != 0) return 1;
   setOwner(fname, userName, gr->gr_name);
   setMode(fname, 384); // Octal 600
