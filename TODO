@@ -2,23 +2,29 @@ currently:
 - adapt configs to latest fidoconf etc. versions
 
 near future:
-- scroll texts in showFile
 - save config between sessions (useful if compiling fails)
+- use nmcopy
+- multi-user support
+- use nltools
+- scroll texts in showFile
 - check entered data
 - BinkD support
-- nltools
+- update english part
 - CDP support
+- use new version of carc (yet to be written)
 - write intro screen on how to use HuskyPnt (GNU readline etc.)
-- use less static buffers (like cwd[1024])
+- use less fixed-size buffers (like cwd[1024])
 - translate config remarks to english
 
 later:
+- shortname support
 - support for other platforms (especially OS/2 and Win32)
 - outbound-viewer for HuskyUI
 - translation to other languages (volunteers needed, I only speak german and
   english)
 - AreaFix interface
-- FLS interface
+- FLS (File List Server / Search) interface
+- Update mode
 - Uninstall
 
 I'm not angry if you send patches for bugfixes or new features. :)
