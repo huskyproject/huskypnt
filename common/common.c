@@ -1,5 +1,6 @@
 /* some variables and functions common to all platforms and languages */
 
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -65,55 +66,6 @@ int askAllright()
   return 1;
 }
 
-char *findVar(char *varName)
-{
-  if (strcmp(varName, "groupname") == 0) return Cfg.groupName;
-  else if (strcmp(varName, "fidoname") == 0) return Cfg.fidoName;
-  else if (strcmp(varName, "username") == 0) return Cfg.userName;
-  else if (strcmp(varName, "users") == 0) return Cfg.users;
-  else if (strcmp(varName, "libdir") == 0) return Cfg.libDir;
-  else if (strcmp(varName, "bindir") == 0) return Cfg.binDir;
-  else if (strcmp(varName, "mandir") == 0) return Cfg.manDir;
-  else if (strcmp(varName, "cfgdir") == 0) return Cfg.cfgDir;
-  else if (strcmp(varName, "logdir") == 0) return Cfg.logDir;
-  else if (strcmp(varName, "incdir") == 0) return Cfg.incDir;
-  else if (strcmp(varName, "debug") == 0) return Cfg.debug;
-  else if (strcmp(varName, "libcversion") == 0) return Cfg.libcversion;
-  else if (strcmp(varName, "location") == 0) return Cfg.location;
-  else if (strcmp(varName, "sysopname") == 0) return Cfg.sysOpName;
-  else if (strcmp(varName, "workdir") == 0) return Cfg.workDir;
-  else if (strcmp(varName, "inbound") == 0) return Cfg.inbound;
-  else if (strcmp(varName, "protinbound") == 0) return Cfg.protInbound;
-  else if (strcmp(varName, "localinbound") == 0) return Cfg.localInbound;
-  else if (strcmp(varName, "tempinbound") == 0) return Cfg.tempInbound;
-  else if (strcmp(varName, "outbound") == 0) return Cfg.outbound;
-  else if (strcmp(varName, "tempoutbound") == 0) return Cfg.tempOutbound;
-  else if (strcmp(varName, "msgbasedir") == 0) return Cfg.msgbaseDir;
-  else if (strcmp(varName, "nodelistdir") == 0) return Cfg.nodelistDir;
-  else if (strcmp(varName, "netmaildir") == 0) return Cfg.netmailDir;
-  else if (strcmp(varName, "scriptdir") == 0) return Cfg.scriptDir;
-  else if (strcmp(varName, "isdndev") == 0) return Cfg.isdnDev;
-  else if (strcmp(varName, "modemdev") == 0) return Cfg.modemDev;
-  else if (strcmp(varName, "modembaud") == 0) return Cfg.modemBaud;
-  else if (strcmp(varName, "internatprefix") == 0) return Cfg.internatPrefix;
-  else if (strcmp(varName, "localprefix") == 0) return Cfg.localPrefix;
-  else if (strcmp(varName, "voicenum") == 0) return Cfg.voiceNum;
-  else if (strcmp(varName, "datanum") == 0) return Cfg.dataNum;
-  else if (strcmp(varName, "amtnum") == 0) return Cfg.amtNum;
-  else if (strcmp(varName, "localnum") == 0) return Cfg.localNum;
-  else if (strcmp(varName, "internatnum") == 0) return Cfg.internatNum;
-  else if (strcmp(varName, "packer") == 0) return Cfg.packer;
-  else if (strcmp(varName, "pointnr") == 0) return Cfg.pointNr;
-  else if (strcmp(varName, "uplinkaddr") == 0) return Cfg.uplinkAddr;
-  else if (strcmp(varName, "uplinkname") == 0) return Cfg.uplinkName;
-  else if (strcmp(varName, "uplinkpwd") == 0) return Cfg.uplinkPwd;
-  else if (strcmp(varName, "homedir") == 0) return Cfg.homeDir;
-  else if (strcmp(varName, "infodir") == 0) return Cfg.infoDir;
-  else if (strcmp(varName, "htmldir") == 0) return Cfg.htmlDir;
-
-  return "";
-}
-
 // returns 0 if successfull
 int processTemplate(char *templName, char *outName)
 {
@@ -121,12 +73,32 @@ int processTemplate(char *templName, char *outName)
   FILE *out;
   char lineIn[1024], lineOut[1024];
   char *lineInTmp, *lineOutTmp;
+  int rc;
+  char *cmdLine;
+  char *tmpName;
 
-  templ = fopen(templName, "r");
+  setTemplateVars();
+
+  cmdLine = malloc(strlen(templName) + strlen(osDir) + strlen(osTmpDir) + 18);
+  sprintf(cmdLine, "%s" dirSepS "lwpp %s > %slwpp.tmp", osDir, templName,
+	  osTmpDir);
+  rc = system(cmdLine);
+  free(cmdLine);
+  if (rc != 0)
+  {
+    printf("lwpp returned error code #%d!\n", rc);
+
+    return rc;
+  }
+
+  tmpName = malloc(strlen(osTmpDir)+9);
+  sprintf(tmpName, "%slwpp.tmp", osTmpDir);
+  templ = fopen(tmpName, "r");
 
   if (templ == NULL)
   {
-    printf("Could not open template-file '%s'!\n", templName);
+    printf("Could not open temporary file '%s'!\n", tmpName);
+    free(tmpName);
 
     return 1;
   }
@@ -172,7 +144,7 @@ int processTemplate(char *templName, char *outName)
 	varName = malloc(pos+1);
 	for (i = 0; i < pos; i++) varName[i] = tolower(lineInTmp[i]);
 	varName[pos] = 0;
-	varContent = findVar(varName);
+	varContent = getVar(varName);
 	free(varName);
 
 	for (varContTmp = varContent ; *varContTmp != 0; varContTmp++)
@@ -198,6 +170,8 @@ int processTemplate(char *templName, char *outName)
 
   fclose(templ);
   fclose(out);
+  unlink(tmpName);
+  free(tmpName);
 
   return 0;
 }

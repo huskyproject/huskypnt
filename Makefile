@@ -7,8 +7,8 @@ choose-language:
 	@echo ""
 	@echo "language                  command"
 	@echo "--------------------------------------------------------------"
-	@echo "english                   make english"
-	@echo "deutsch                   make german"
+	@echo "english                   make c-english"
+	@echo "deutsch                   make c-german"
 	@echo ""
 
 clean:
@@ -20,7 +20,7 @@ clean:
 	@echo "Linux                     make linux-clean"
 	@echo ""
 
-english:
+c-english:
 	@echo ""
 	@echo "Please choose your operating system:"
 	@echo ""
@@ -29,7 +29,7 @@ english:
 	@echo "Linux                     make linux-english"
 	@echo ""
 
-german:
+c-german:
 	@echo ""
 	@echo "Bitte waehle Dein Betriebssystem aus:"
 	@echo ""

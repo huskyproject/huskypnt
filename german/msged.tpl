@@ -15,16 +15,16 @@
 ;
 ; Lines will be included into the resulting message depending on the
 ; attributes for the function (see config file).  The line tokens begin with
-; '@' and have *one* following char that defines what type the line is.  The
+; '\@' and have *one* following char that defines what type the line is.  The
 ; types of lines are:
 ;
-;     @l      Followup (reply-comment) msgs.
-;     @f      Forwarded msgs.
-;     @r      Redirected msgs.
-;     @n      New msgs (not forwarded or redirected).
-;     @a      Messages appearing in a new area (replys only).
-;     @q      Messages that include a quote.
-;     @m      Includes the message text, quoted or not.
+;     \@l      Followup (reply-comment) msgs.
+;     \@f      Forwarded msgs.
+;     \@r      Redirected msgs.
+;     \@n      New msgs (not forwarded or redirected).
+;     \@a      Messages appearing in a new area (replys only).
+;     \@q      Messages that include a quote.
+;     \@m      Includes the message text, quoted or not.
 ;
 ; Note that the letters are case-insensitive.
 ;
@@ -66,33 +66,33 @@
 ;    %oeh - old echo tag
 ;-----------------------------------------------------------------------------
 ;
-@f* Forwarded from %oeh by %una (%uad).
-@f* Originally by: %ofn (%ooa), %dms %mms %yms %tnm.
-@f* Originally to: %otn (%oda).
-@f
-@f---------- Forwarded message ----------
+\@f* Forwarded from %oeh by %una (%uad).
+\@f* Originally by: %ofn (%ooa), %dms %mms %yms %tnm.
+\@f* Originally to: %otn (%oda).
+\@f
+\@f---------- Forwarded message ----------
 ;
-@r* Redirected by: %una (%uad).
-@r* Originally to: %otn (%oda).
-@r* Originally by: %ofn (%ooa), %dms %mms %yms %tnm.
-@r
-@r---------- Redirected message ----------
+\@r* Redirected by: %una (%uad).
+\@r* Originally to: %otn (%oda).
+\@r* Originally by: %ofn (%ooa), %dms %mms %yms %tnm.
+\@r
+\@r---------- Redirected message ----------
 ;
-@l* Originally by: %ofn (%ooa), %dms %mms %yms %tnm.
-@l
+\@l* Originally by: %ofn (%ooa), %dms %mms %yms %tnm.
+\@l
 ;
-@a * Reply to message originally in area %oeh
-@a
+\@a * Reply to message originally in area %oeh
+\@a
 ;
-@nHi %tfn!
-@n
+\@nHi %tfn!
+\@n
 ;
-; @q%mms %dms %tnm %yms, %ofn wrote to %otn:
-@q%dms %mms %yms %tnm, %ofn wrote to %otn:
-@q
+; \@q%mms %dms %tnm %yms, %ofn wrote to %otn:
+\@q%dms %mms %yms %tnm, %ofn wrote to %otn:
+\@q
 ;
-@m
+\@m
 ;
-@n
-@nCU %ufn
+\@n
+\@nCU/$OS$ %ufn
 ;-----------------------------------------------------------------------------

@@ -515,7 +515,7 @@ int profilecfg()
 {
   FILE *f;
   char line[1024];
-  int foundPath = 1, foundFidoconfig = 1, pathOk = 1;
+  int foundBin = 1, foundScripts = 1, foundFidoconfig = 1, foundPath = 1;
 
   printf(configProfileText);
 
@@ -527,8 +527,6 @@ int profilecfg()
     return 1;
   }
 
-  // a bit dirty because it won't find path/fidoconfig at a 1024-byte boundary,
-  // but who has lines with over 1024 chars in /etc/profile?
   while (feof(f) == 0)
   {
     fgets(line, 1024, f);
@@ -537,10 +535,8 @@ int profilecfg()
     if (strstr(line, "PATH=") != NULL)
     {
       foundPath = 0;
-      if ((strstr(line, Cfg.binDir) != NULL) &&
-	  (strstr(line, Cfg.scriptDir) != NULL))
-	pathOk = 0;
-      else pathOk = 1;
+      if (strstr(line, Cfg.binDir) != NULL) foundBin = 0;
+      if (strstr(line, Cfg.scriptDir) != NULL) foundScripts = 0;
     }
     else if (strstr(line, "FIDOCONFIG=") != NULL)
     {
@@ -558,9 +554,17 @@ int profilecfg()
     fprintf(f, "export PATH=%s:%s:%s\n", getenv("PATH"), Cfg.binDir,
 	    Cfg.scriptDir);
   }
-  else if (pathOk != 0)
+  else if ((foundBin != 0) && (foundScripts != 0))
   {
     fprintf(f, "PATH=${PATH}:%s:%s\n", Cfg.binDir, Cfg.scriptDir);
+  }
+  else if ((foundBin != 0) && (foundScripts == 0))
+  {
+    fprintf(f, "PATH=${PATH}:%s\n", Cfg.binDir);
+  }
+  else if ((foundBin == 0) && (foundScripts != 0))
+  {
+    fprintf(f, "PATH=${PATH}:%s\n", Cfg.scriptDir);
   }
 
   fclose(f);
@@ -606,10 +610,86 @@ int callAsUser(char *userName, char *groupName,
 
     exit(func(userName, groupName));
   }
-  do { usleep(100000); waitpid(pid, &childstat, 0); }
-  while (WIFEXITED(childstat) == 0);
 
-  return WEXITSTATUS(childstat);
+  pid = waitpid(pid, &childstat, 0);
+  while ((WIFEXITED(childstat) == 0) && (WIFSIGNALED(childstat) == 0) &&
+	 (pid != -1))
+  {
+    pid = waitpid(pid, &childstat, 0);
+  }
+
+  if (WIFEXITED(childstat) != 0) return WEXITSTATUS(childstat);
+  if (WIFSIGNALED(childstat) != 0) return WTERMSIG(childstat);
+
+  // child exited faster than waitpid was issued, assume it was all right
+  return 0;
 }
 
+// returns 0 on success
+int setTemplateVars()
+{
+  int rc;
+
+  rc = 0;
+  rc += setenv("linux", "1", 1);
+  rc += setenv("os", OS, 1);
+
+  rc += setenv("amtnum", Cfg.amtNum, 1);
+  rc += setenv("bindir", Cfg.binDir, 1);
+  rc += setenv("cfgdir", Cfg.cfgDir, 1);
+  rc += setenv("datanum", Cfg.dataNum, 1);
+  rc += setenv("debug", Cfg.debug, 1);
+  rc += setenv("dirsep", dirSepS, 1);
+  rc += setenv("fidoname", Cfg.fidoName, 1);
+  rc += setenv("groupname", Cfg.groupName, 1);
+  rc += setenv("homedir", Cfg.homeDir, 1);
+  rc += setenv("htmldir", Cfg.htmlDir, 1);
+  rc += setenv("inbound", Cfg.inbound, 1);
+  rc += setenv("incdir", Cfg.incDir, 1);
+  rc += setenv("infodir", Cfg.infoDir, 1);
+  rc += setenv("internatnum", Cfg.internatNum, 1);
+  rc += setenv("internatprefix", Cfg.internatPrefix, 1);
+  rc += setenv("isdndev", Cfg.isdnDev, 1);
+  rc += setenv("langdir", langDir, 1);
+  rc += setenv("libcversion", Cfg.libcVersion, 1);
+  rc += setenv("libdir", Cfg.libDir, 1);
+  rc += setenv("localinbound", Cfg.localInbound, 1);
+  rc += setenv("localnum", Cfg.localNum, 1);
+  rc += setenv("localprefix", Cfg.localPrefix, 1);
+  rc += setenv("location", Cfg.location, 1);
+  rc += setenv("logdir", Cfg.logDir, 1);
+  rc += setenv("mandir", Cfg.manDir, 1);
+  rc += setenv("modembaud", Cfg.modemBaud, 1);
+  rc += setenv("modemdev", Cfg.modemDev, 1);
+  rc += setenv("msgbasedir", Cfg.msgbaseDir, 1);
+  rc += setenv("netmaildir", Cfg.netmailDir, 1);
+  rc += setenv("nodelistdir", Cfg.nodelistDir, 1);
+  rc += setenv("outbound", Cfg.outbound, 1);
+  rc += setenv("packer", Cfg.packer, 1);
+  rc += setenv("pointnr", Cfg.pointNr, 1);
+  rc += setenv("protinbound", Cfg.protInbound, 1);
+  rc += setenv("scriptdir", Cfg.scriptDir, 1);
+  rc += setenv("sysopname", Cfg.sysOpName, 1);
+  rc += setenv("tempinbound", Cfg.tempInbound, 1);
+  rc += setenv("tempoutbound", Cfg.tempOutbound, 1);
+  rc += setenv("uplinkaddr", Cfg.uplinkAddr, 1);
+  rc += setenv("uplinkname", Cfg.uplinkName, 1);
+  rc += setenv("uplinkpwd", Cfg.uplinkPwd, 1);
+  rc += setenv("username", Cfg.userName, 1);
+  rc += setenv("users", Cfg.users, 1);
+  rc += setenv("voicenum", Cfg.voiceNum, 1);
+  rc += setenv("workdir", Cfg.workDir, 1);
+
+  return rc;
+}
+
+char *getVar(char *varName)
+{
+  char *content;
+
+  content = getenv(varName);
+  if (content != NULL) return content;
+
+  return "";
+}
 

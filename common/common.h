@@ -3,7 +3,7 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#define VERSION "1.3"
+#define VERSION "0.1alpha3"
 
 #define nfree(a) { if (a != NULL) { free(a); a = NULL; } }
 
@@ -26,7 +26,7 @@ char *nodelists[numNodelists];
 #define logDirIdx                           8
 #define incDirIdx                           9
 #define debugIdx                           10
-#define libcversionIdx                     11
+#define libcVersionIdx                     11
 #define locationIdx                        12
 #define sysOpNameIdx                       13
 #define workDirIdx                         14
@@ -66,7 +66,7 @@ typedef struct _tCfg
   char *libDir, *binDir, *manDir, *cfgDir, *logDir, *incDir, *infoDir;
   char *htmlDir;
   char *debug;
-  char *libcversion;
+  char *libcVersion;
   char *location, *sysOpName;
   char *workDir, *inbound, *protInbound, *localInbound, *tempInbound;
   char *tempOutbound, *outbound, *msgbaseDir, *nodelistDir, *netmailDir;
@@ -91,8 +91,6 @@ char *ask(char *prompt, char *defaultValue);
 
 // 0 if everything's allright
 int askAllright();
-
-char *findVar(char *varName);
 
 // returns 0 if successfull
 int processTemplate(char *templName, char *outName);

@@ -1,0 +1,212 @@
+# Lwpp-HOWTO.txt:  notes on using lwpp.
+# create 1999-Aug-15 20:18 jmk
+# autodate: 1999-Aug-16 03:42
+
++----------+
+| Contents |
++----------+
+
+  - Introduction
+  - Prefixes
+  - Directives
+  - Symbols
+
++--------------+
+| Introduction |
++--------------+
+
+Lwpp is a `filter'---that is, a program which reads from the standard
+input, transforms the input somehow, and writes the transformed input
+to the standard output.  Lwpp expects its input to be a text file
+composed of lines, each composed of zero or more characters and ending
+with a newline ('\n').  Lwpp scans the input for `directives' which it
+understands, and writes lines from the input to the output based on
+conditions specified in the directives it finds.
+
++----------+
+| Prefixes |
++----------+
+
+Lwpp expects each directive to begin with a specific prefix.  The
+default prefix for lwpp directives is `@'.  For example:
+
+    @ifdef BLAH
+      blah blah blah
+    @endif
+
+This should look very familiar to anyone who has used the C
+preprocessor's `#ifdef ... #endif' directives.
+
+Lwpp's prefix can be changed to any text using a command-line option.
+For example:
+
+    lwpp --prefix '%'
+
+changes the prefix to a percent character, so that lwpp understands
+directives such as:
+
+    %ifndef haha
+      ha ha ha ha ha ha ha!
+    %endif
+
+The prefix can be more than one character long.  For example:
+
+    lwpp --prefix '@@@'
+
+makes lwpp expect directives to begin with `@@@', such as:
+
+    @@@ifeq BE_EXCITED 1
+      Huzzah!!
+    @@@endif
+
+Using a prefix of '' (an empty string) is not recommended and will
+cause undefined behavior.
+
++------------+
+| Directives |
++------------+
+
+Lwpp understands the following directives:
+
+    define <token> [<value>]  Define <token> to have value <value>.
+                              If <value> is omitted, defaults to `1'.
+
+    undef <token>             Undefine <token>.
+
+    ifdef <token>             If <token> is defined, print the following
+                              lines on the output, until the next `else'
+                              or `endif' directive.
+
+    else                      If the prior `if' directive evaluated to
+                              false, print the following lines on the
+                              output.
+
+    endif                     Conclude the preceding `if ... [else ...]'.
+
+    ifndef <token>            If <token> is *not* defined, print the
+                              following lines on the output, until the
+                              next `else' or `endif' directive.
+
+    ifeq <token> <value>      If <token> is lexically equal to <value>,
+                              print the following lines on the output,
+                              until the next `else' or `endif' directive.
+
+    ifneq <token> <value>     If <token> is *not* lexically equal to
+                              <value>, print the following lines on the
+                              output, until the next `else' or `endif'
+                              directive.
+
+For example, the following input:
+
+    @define EXCITEMENT 1
+    [Enter Fat Bastard carrying mojo.  Mini-Me slyly retrieves mojo
+     from Fat Bastard while eluding his grasp.]
+    @ifeq EXCITEMENT 1
+    FB:     Keep your mojo!!  And your money!!  And just give that baby!!!
+    @else
+    FB:     Cripes.  Oh well.  [Exit.]
+    @endif
+    Dr. E:  Rrrright....
+
+generates the following output:
+
+    [Enter Fat Bastard carrying mojo.  Mini-Me slyly retrieves mojo
+     from Fat Bastard while eluding his grasp.]
+    FB:     Keep your mojo!!  And your money!!  And just give that baby!!!
+    Dr. E:  Rrrright....
+
+Note that, for a directive to be valid, the prefix must be the initial
+characters on the line, without any leading whitespace.  Embedded
+whitespace between the prefix and the lwpp directive is fine; for
+example:
+
+    @ifdef LevelOne
+    @ ifdef LevelTwo
+    @  ifeq YouAreHere 1
+    You are here.
+    @  else
+    You are not here.
+    @  endif
+    @ endif
+    @endif
+
++---------+
+| Symbols |
++---------+
+
+Symbols are the tokens whose definition lwpp checks in its conditional
+directives.  For example, in the following directive:
+
+    @ifdef LINUX
+
+the symbol is `LINUX', and the condition is true if `LINUX' is defined,
+regardless of its definition.  In this one:
+
+    @ifneq UseX11 0
+
+the symbol is `UseX11', and the condition is true if the definition of
+`UseX11' is anything other than `0'.
+
+[ Note that this comparison is purely a lexical one.  That is, lwpp
+  doesn't know or care about numeric values or decimal points; it only
+  compares the given value and the symbol definition on a
+  character-by-character basis.  If all the characters match, the
+  comparison succeeds, otherwise, it fails.  Comparisons fail for
+  undefined symbols. ]
+
+There are three methods of defining or undefining symbols for lwpp:
+
+  (1) In the input file, using the `define' and `undef' directives.
+
+      This method overrides any of the other ones.  It's simple to use,
+      and it's obvious from inspecting the input file what the
+      definition of each symbol will be; however, it's not as flexible
+      in that it requires more work to change the definition.  For
+      example:
+
+        @define LINUX
+	@define GLIBC 2.0
+	@undef SUNOS_BROKEN_HEADERS
+
+  (2) On the lwpp command line, using the `-D' and `-U' (or `--define'
+      and `--undef') options.
+
+      This method overrides [3] below, but can be overridden by using
+      `define' or `undef' directives in the input file.  This method is
+      very flexible, but it's not obvious from inspecting the input
+      what the definition of the various symbols might be.  For
+      example:
+
+        lwpp -DLINUX -DGLIBC=2.0 -USUNOS_BROKEN_HEADERS
+	
+  (3) In the environment.
+
+      Symbol definitions in the environment are overridden by both
+      command-line definitions and embedded definitions.  This method
+      allows a great deal of flexibility in determining what symbols
+      are predefined, but makes it not at all obvious what the
+      definitions of symbols are without inspecting the environment.
+      For example (using a Bourne shell):
+      
+        LINUX=1
+	GLIBC=2.0
+	export LINUX GLIBC
+	unset SUNOS_BROKEN_HEADERS
+	
+It's quite possible (and recommended, in some cases) to create default
+definitions for symbols which are embedded in the input file, but which
+can be overridden from the command line or the environment.  For example:
+
+    @ifndef LINUX
+    @define LINUX 1
+    @endif
+
+For further examples of how to use lwpp, see the sample files which
+accompany lwpp:
+
+    tmp.txt
+    tmp2.txt
+
+For further information about lwpp, see the accompanying `README' file.
+
+# -------- End of document --------

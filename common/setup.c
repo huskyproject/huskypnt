@@ -79,7 +79,7 @@ void getconfig()
     Cfg.userName = Cfg.fidoName;
 //    Cfg.users = ask(questions[usersIdx], defaults[usersIdx]);
     Cfg.users = strdup("");
-    Cfg.libcversion = ask(questions[libcversionIdx], defaults[libcversionIdx]);
+    Cfg.libcVersion = ask(questions[libcVersionIdx], defaults[libcVersionIdx]);
     Cfg.debug = ask(questions[debugIdx], defaults[debugIdx]);
     Cfg.libDir = ask(questions[libDirIdx], defaults[libDirIdx]);
     Cfg.binDir = ask(questions[binDirIdx], defaults[binDirIdx]);
@@ -362,7 +362,6 @@ int unpacksources(char *userName, char *groupName)
 int createmakeconfig(char *userName, char *groupName)
 {
   char *fname, *fname2;
-  FILE *f;
 
   printf(creatingMakefileCfgsText);
 
@@ -392,46 +391,8 @@ int createmakeconfig(char *userName, char *groupName)
 
     return 1;
   }
-  free(fname2);
-
-  f = fopen(fname, "a");
-  if (f == NULL)
-  {
-    printf("Could not open '%s' for appending!\n", fname);
-    free(fname);
-
-    return 1;
-  }
-
-  if (strcmp(Cfg.libcversion, "libc5") == 0)
-  {
-    fprintf(f, "SOPTS        = -DHAS_STATFS -DSTATFS_IN_VFS_H -DHAS_SETSID -DHAS_NDBM_H \\\n"
-	    "\t\t-DDONT_HAVE_TM_GMTOFF -DHAS_TERMIOS_H -DASCII_LOCKFILES \\\n"
-	    "\t\t-DHAS_FSYNC -DHAS_IOCTL_H -DHAS_REGEX_H -DHAS_TCP \\\n"
-	    "\t\t-DNEED_UUCPFROM -DNEED_TRAP -DSETPROCTITLE \\\n"
-	    "\t\t-DHAS_SELECT -DREGEX_NEED_CARET -DPRE_21_KERNEL\n"
-	    "OPTS\t= ${SOPTS} -DFORCEINTL -DNEED_BSY -DSLAVE_SENDS_NAK_TOO \\\n"
-	    "-DBELIEVE_ZFIN=1\n");
-  }
-  else
-  {
-    fprintf(f, "SOPTS        = -DHAS_STATFS -DSTATFS_IN_VFS_H -DHAS_SETSID -DHAS_NDBM_H \\\n"
-	    "\t\t-DDONT_HAVE_TM_GMTOFF -DHAS_TERMIOS_H -DASCII_LOCKFILES \\\n"
-	    "\t\t-DHAS_FSYNC -DHAS_IOCTL_H -DHAS_REGEX_H -DHAS_TCP \\\n"
-	    "\t\t-DNEED_UUCPFROM -DNEED_TRAP -DSETPROCTITLE \\\n"
-	    "\t\t-DHAS_SELECT -DREGEX_NEED_CARET -DBSD_SIGNALS \\\n"
-	    "\t\t-DPRE_21_LINUX -DSETPROCTITLE\n"
-	    "OPTS\t= ${SOPTS} -DFORCEINTL -DNEED_BSY -DSLAVE_SENDS_NAK_TOO \\\n"
-	    "-DBELIEVE_ZFIN=1\n"
-	    "LIBRESOLV = -lresolv\t\t# this is needed for glibc 2\n");
-  }
-  if (strcmp(Cfg.debug, "1") == 0)
-  {
-    fprintf(f, "CFLAGS += -ggdb\n");
-  }
-
-  fclose(f);
   free(fname);
+  free(fname2);
 
   printf(createdMakefileCfgsText);
 
@@ -584,7 +545,6 @@ int installprogs()
 int createconfig(char *userName, char *groupName)
 {
   char fname[1024], fname2[1024];
-  FILE *f;
 
   printf(creatingCfgText);
 
@@ -619,41 +579,6 @@ int createconfig(char *userName, char *groupName)
   sprintf(fname2, "%s" dirSepS "ifcico.cfg", langDir);
   if (processTemplate(fname2, fname) != 0) return 1;
   setMode(fname, 0644);
-
-  f = fopen(fname, "a");
-  if (f == NULL)
-  {
-    printf("Could not open '%s' for appending!\n", fname);
-
-    return 1;
-  }
-
-  if (strlen(Cfg.isdnDev) > 0)
-  {
-    fprintf(f, "ModemPort\t(X75) %s:L115200\n", Cfg.isdnDev);
-  }
-
-  if (strlen(Cfg.modemDev) > 0)
-  {
-    fprintf(f, "ModemPort\t(V34) %s:L%s\n", Cfg.modemDev, Cfg.modemBaud);
-    fprintf(f, "ModemPort\t(V32B) %s:L%s\n", Cfg.modemDev, Cfg.modemBaud);
-    fprintf(f, "ModemPort\t(INTERN) %s:L%s\n", Cfg.modemDev, Cfg.modemBaud);
-  }
-
-  if ((strlen(Cfg.isdnDev) > 0) && (strlen(Cfg.modemDev) > 0))
-  {
-    fprintf(f, "Flags\tXA,X75,V34,V42B,U,ENC\n");
-  }
-  else if (strlen(Cfg.isdnDev) > 0)
-  {
-    fprintf(f, "Flags\tXA,X75,U,ENC\n");
-  }
-  else
-  {
-    fprintf(f, "Flags\tXA,V34,V42B,U,ENC\n");
-  }
-
-  fclose(f);
 
   sprintf(fname, "%s" dirSepS "password.lst", Cfg.cfgDir);
   sprintf(fname2, "%s" dirSepS "password.lst", langDir);
@@ -788,7 +713,7 @@ void disposeCfg()
   nfree(Cfg.logDir);
   nfree(Cfg.incDir);
   nfree(Cfg.debug);
-  nfree(Cfg.libcversion);
+  nfree(Cfg.libcVersion);
   nfree(Cfg.location);
   nfree(Cfg.sysOpName);
   nfree(Cfg.workDir);

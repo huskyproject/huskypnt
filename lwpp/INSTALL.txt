@@ -1,0 +1,50 @@
+# INSTALL:  notes on installing lwpp
+# created 1999-Aug-15 20:17 jmk
+# autodate: 1999-Aug-15 20:22
+
++-----------------+
+| Installing Lwpp |
++-----------------+
+
+Installing lwpp should be relatively straightforward:
+
+  (0) Inspect the Makefile to ensure that things will work for your
+      system.  In particular, pay attention to the following settings:
+      
+        PREFIX
+        INSTALL_BIN
+        MKDIRS
+        CC
+        OPTFLAGS
+        WARNFLAGS
+
+  (1) Build the lwpp program:
+  
+        make
+
+  (2) Test lwpp on the included sample files:
+  
+        ./lwpp ./tmp.txt
+        ./lwpp ./tmp2.txt
+
+      The first file should generate text on standard output.  The
+      second should generate some text on standard output and a warning
+      on standard error.
+
+  (3) Install lwpp:
+  
+        make install
+
+  (4) There you are.
+
+If you have RPM <http://www.rpm.org/> installed on your system, you can
+build source and binary RPM packages directly from the lwpp tarball
+using the included spec file:
+
+        rpm -ta --clean lwpp-<version>.tar.gz
+
+where <version> is the version of lwpp.
+
+See the `README' file for more information about lwpp.
+
+# -------- End of document --------

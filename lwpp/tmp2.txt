@@ -1,0 +1,8 @@
+@ifdef _BLAH_
+_BLAH_ is defined.
+@else
+_BLAH_ isn't defined.
+@endif
+@ifeq _WHEEEE_ yes
+Wheeeeeeeee!
+

@@ -8,6 +8,8 @@
 #define OS "Linux"
 #define dirSepC '/'
 #define dirSepS "/"
+#define osDir "linux"
+#define osTmpDir "/tmp/"
 
 extern char *defaults[numIdx+1];
 
@@ -71,6 +73,11 @@ int checkRootAccess();
 // call a function as the specified user and group
 int callAsUser(char *userName, char *groupName,
 	       int func(char *userName, char *groupName) );
+
+// returns 0 on success
+int setTemplateVars();
+
+char *getVar(char *varName);
 
 #endif
 

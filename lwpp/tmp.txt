@@ -1,0 +1,37 @@
+@define "My Computer"
+Line 1
+Line 2
+Line 3
+@ifeq HOME "/local/home/jmknoble"
+Hi, Jim!
+@else
+Where's Jim?
+@endif
+Line 5
+Line 6
+@ifdef "My Computer"
+We're using my computer.
+@undef "My Computer"
+@endif
+@ifdef '_BLAH_'
+_BLAH_ is defined.
+@else
+_BLAH_ isn't defined ...
+@ifndef _HAHA_
+... and neither is _HAHA_.
+@else
+... but _HAHA_ is.
+@endif
+@endif
+@ifeq LOGNAME ' '
+LOGNAME is empty.
+@else
+@ifeq LOGNAME "jmknoble"
+Hi, Jim!
+@else
+@ifneq LOGNAME root
+You're not root.  Who are you?
+@endif
+@endif
+@endif
+End

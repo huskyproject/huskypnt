@@ -1,11 +1,11 @@
 near future:
 - remove OS dependencies
 - menu-based configuration with GNU readline
-- translate config remarks to english
+- BinkD support
 - nltools
-- conditionals in templates (e.g. for ifcico + ISDN vs. modem)
 - check entered data
 - CDP support
+- translate config remarks to english
 
 later:
 - translation to other languages (volunteers needed, I only speak german and
