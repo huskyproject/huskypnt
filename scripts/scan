@@ -1,0 +1,20 @@
+#!/bin/sh
+
+function main()
+{
+  echo >> $WORKDIR$/echotoss.log
+  cp $WORKDIR$/echotoss.log $WORKDIR$/echotoss.log.2
+
+  hpt scan
+
+  hpt pack
+
+  cp $WORKDIR$/echotoss.log.2 $WORKDIR$/echotoss.log
+  hptlink
+
+  if [ -f $WORKDIR$/echotoss.log ] ; then rm $WORKDIR$/echotoss.log ; fi
+  if [ -f $WORKDIR$/echotoss.log.2 ] ; then rm $WORKDIR$/echotoss.log.2 ; fi
+}
+
+main >> $logdir$/husky.log 2>&1
+

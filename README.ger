@@ -1,0 +1,13 @@
+
+				HuskyPnt
+				========
+
+HuskyPnt ist ein PointPaket, das auf Software aus dem Husky-Projekt aufbaut.
+Ziel ist, moeglichst viele (natuerliche) Sprachen und Plattformen zu 
+unterstuetzen, derzeit sind aber nur die deutsche und englische Version fuer
+Linux nutzbar.
+
+ACHTUNG: Dies ist eine ALPHA-Version! Ich garantiere fuer nichts!
+	 Da die Installationsroutine als root laufen muss, koennen irreparable
+	 Schaeden auftreten!
+

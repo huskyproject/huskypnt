@@ -1,0 +1,34 @@
+#!/bin/sh
+
+function main()
+{
+  # convert all filenames to lowercase
+  find $INBOUND$ -name "*[A-Z]*" -exec tolower {} \\;
+
+
+  # check for Node/PointDiffs
+  # nlupdate
+
+  # toss
+  hpt toss
+
+  # check for bad pkts, archives, etc.
+
+  # create echotoss.log
+  echo >> $WORKDIR$/echotoss.log
+
+  # scan for mails to send
+  hpt scan
+
+  # pack netmails
+  hpt pack
+
+  # create import.log
+  touch $WORKDIR$/import.log
+  # link areas with new mails
+  hptlink
+
+}
+
+main >> $logdir$/husky.log 2>&1
+

@@ -1,0 +1,4 @@
+#!/bin/sh
+export CURDATE=`/bin/date +%y%m%d`
+/usr/bin/find $LOGDIR$ -type f ! -name "*\\.[0-9][0-9][01][0-9][0-3][0-9]" -exec /bin/sh -c '/bin/cat {} > {}.\${CURDATE} ; /bin/echo > {}' \\; >> $logdir$/husky.log 2>&1
+

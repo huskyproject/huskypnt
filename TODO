@@ -1,0 +1,18 @@
+near future:
+- menu-based configuration with GNU readline
+- nltools
+- conditionals in templates (e.g. for ifcico + ISDN vs. modem)
+- check entered data
+- CDP support
+
+later:
+- translation to other languages (volunteers needed, I only speak german and
+  english)
+- support for other platforms (especially OS/2 and Win32)
+- outbound-viewer for HuskyUI
+
+I'm not angry if you send patches for bugfixes or new features. :)
+
+--
+Sascha Silbe <Sascha.Silbe@ldknet.org>
+
