@@ -60,7 +60,7 @@ char *defaults[numIdx] =
   "/usr/local/lib",
   "/usr/local/bin",
   "/usr/local/man",
-  "/usr/local/etc/fido",
+  "/etc/fido",
   "/var/log/fido",
   "/usr/local/include",
   "0",
@@ -744,6 +744,29 @@ int osInit()
 
   rc = setVar("linux", "1");
   rc += setVar("os", OS);
+  rc += setVar("cp", "cp");
+  rc += setVar("mv", "mv");
+  rc += setVar("ln", "ln");
+  rc += setVar("lnopt", "-sf");
+  rc += setVar("rm", "rm");
+  rc += setVar("cc", "gcc");
+  rc += setVar("gpp", "g++");
+  rc += setVar("ar", "ar");
+  rc += setVar("ar_r", "r");
+  rc += setVar("install", "install");
+  rc += setVar("mkdir", "mkdir");
+  rc += setVar("mkdiropt", "-p");
+  rc += setVar("ldconfig", "/sbin/ldconfig");
+  rc += setVar("ranlib", "ar s");
+  rc += setVar("h2pas", "h2pas");
+  rc += setVar("ostype", "UNIX");
+  rc += setVar("uname", "LNX");
+  rc += setVar("dynlibs", "1");
+  rc += setVar("addcdefs", "-DHAS_POPEN");
+  rc += setVar("exe", "");
+  rc += setVar("obj", ".o");
+  rc += setVar("lib", ".a");
+  rc += setVar("tpu", ".ppu");
 
   return rc;
 }
